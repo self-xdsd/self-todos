@@ -40,7 +40,7 @@ public final class Ping {
      */
     @GetMapping("/ping")
     public ResponseEntity<String> ping() {
-        return ResponseEntity.ok("Self TODOs is up and running!");
+        return ResponseEntity.ok("Self Puzzles is up and running!");
     }
 
 }
