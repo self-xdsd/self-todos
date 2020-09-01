@@ -1,4 +1,4 @@
-## Self TODOs
+## Self Puzzles
 
 [![Build Status](https://travis-ci.org/self-xdsd/self-todos.svg?branch=master)](https://travis-ci.org/self-xdsd/self-todos)
 [![Coverage Status](https://coveralls.io/repos/github/self-xdsd/self-todos/badge.svg?branch=master)](https://coveralls.io/github/self-xdsd/self-todos?branch=master)
@@ -8,7 +8,7 @@
 [![DevOps By Rultor.com](http://www.rultor.com/b/self-xdsd/self-todos)](http://www.rultor.com/p/self-xdsd/self-todos)
 [![We recommend IntelliJ IDEA](http://amihaiemil.github.io/images/intellij-idea-recommend.svg)](https://www.jetbrains.com/idea/)
 
-Self TODOs module, version `n/a`.
+Self Puzzles module, version `n/a`.
 
 ## Contributing 
 
