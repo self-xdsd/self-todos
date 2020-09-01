@@ -12,7 +12,7 @@
 	<artifactId>self-todos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>self-todos</name>
-	<description>Module for transforming TODOs into Issues</description>
+	<description>Module for transforming Puzzles into Issues</description>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,7 +42,11 @@
             <artifactId>self-storage</artifactId>
             <version>${self.storage.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.jcabi</groupId>
+            <artifactId>jcabi-ssh</artifactId>
+            <version>1.6.1</version>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -292,7 +296,7 @@
             <distributionManagement>
                 <repository>
                     <id>github</id>
-                    <name>Self's TODOs Module on Github Packages</name>
+                    <name>Self's Puzzle Module on Github Packages</name>
                     <url>https://maven.pkg.github.com/self-xdsd/self-todos</url>
                 </repository>
             </distributionManagement>
