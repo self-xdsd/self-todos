@@ -36,8 +36,10 @@ import java.util.Iterator;
  * @author criske
  * @version $Id$
  * @since 0.0.1
+ * @todo #3:30min Customize the script being run (put it into a properties
+ *  files and format it with the Project's data).
  * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
- * for cases when there are invalid documents.
+ *  for cases when there are invalid documents.
  */
 public final class SshPuzzles implements Puzzles<Project> {
 
