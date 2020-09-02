@@ -30,200 +30,73 @@ package com.selfxdsd.todos;
  * @checkstyle HiddenField (500 lines).
  * @checkstyle ParameterNumber (500 lines).
  */
-public final class Puzzle {
-
-    /**
-     * Unique ID of the puzzle.
-     */
-    private final String id;
-
-    /**
-     * Is a ticket name puzzle marker starts from, in most cases it will be
-     * the number of Provider issue.
-     */
-    private final int ticket;
-
-    /**
-     * Body of the puzzle.
-     */
-    private final String body;
-
-
-    /**
-     * The amount of minutes the puzzle is supposed to take.
-     */
-    private final int estimate;
-
-
-    /**
-     * The file path where the puzzle is added.
-     */
-    private final String file;
-
-
-    /**
-     * Lines is where the puzzle is found, inside the file.
-     */
-    private final String lines;
-
-    /**
-     * The role that is allowed to solve the puzzle.
-     */
-    private final String role;
-
-    /**
-     * Author of the puzzle.
-     */
-    private final String author;
-
-    /**
-     * Author's email.
-     */
-    private final String email;
-
-    /**
-     * Timestamp creation of the puzzle.
-     */
-    private final String time;
-
-    /**
-     * Private constructor. Use the builder instead.
-     * @param id Unique ID of the puzzle.
-     * @param ticket Is a ticket name puzzle marker starts from,
-     *               in most cases it will be the number of Provider issue.
-     * @param body Body of the puzzle.
-     * @param estimate The amount of minutes the puzzle is supposed to take.
-     * @param file The file path where the puzzle is added.
-     * @param lines Lines is where the puzzle is found, inside the file.
-     * @param role The role that is allowed to solve the puzzle.
-     * @param author Author of the puzzle.
-     * @param email Author's email.
-     * @param time Timestamp creation of the puzzle.
-     */
-    private Puzzle(final String id,
-                   final int ticket,
-                   final String body,
-                   final int estimate,
-                   final String file,
-                   final String lines,
-                   final String role,
-                   final String author,
-                   final String email,
-                   final String time) {
-        this.id = id;
-        this.ticket = ticket;
-        this.body = body;
-        this.estimate = estimate;
-        this.file = file;
-        this.lines = lines;
-        this.role = role;
-        this.author = author;
-        this.email = email;
-        this.time = time;
-    }
-
+public interface Puzzle {
 
     /**
      * Unique ID of the puzzle.
      * @return String.
      */
-    public String getId() {
-        return this.id;
-    }
+    String getId();
 
     /**
      * Is a ticket name puzzle marker starts from, in most cases it will be
      * the number of Provider issue.
      * @return Integer.
      */
-    public int getTicket() {
-        return this.ticket;
-    }
+    int getTicket();
 
     /**
      * Body of the puzzle.
      * @return String.
      */
-    public String getBody() {
-        return this.body;
-    }
+    String getBody();
 
     /**
      * The amount of minutes the puzzle is supposed to take.
      * @return Integer.
      */
-    public int getEstimate() {
-        return this.estimate;
-    }
+    int getEstimate();
 
     /**
      * The file path where the puzzle is added.
      * @return String.
      */
-    public String getFile() {
-        return this.file;
-    }
+    String getFile();
 
     /**
      * Lines is where the puzzle is found, inside the file.
      * @return String.
      */
-    public String getLines() {
-        return this.lines;
-    }
+    String getLines();
 
     /**
      * The role that is allowed to solve the puzzle.
      * @return String.
      */
-    public String getRole() {
-        return this.role;
-    }
+    String getRole();
 
     /**
      * Author of the puzzle.
      * @return String.
      */
-    public String getAuthor() {
-        return this.author;
-    }
+    String getAuthor();
 
     /**
      * Author's email.
      * @return String.
      */
-    public String getEmail() {
-        return this.email;
-    }
+    String getEmail();
 
     /**
      * Timestamp creation of the puzzle.
      * @return String.
      */
-    public String getTime() {
-        return this.time;
-    }
-
-    @Override
-    public String toString() {
-        return "Puzzle{"
-            + "id='" + id + '\''
-            + ", ticket=" + ticket
-            + ", body='" + body + '\''
-            + ", estimate=" + estimate
-            + ", file='" + file + '\''
-            + ", lines='" + lines + '\''
-            + ", role='" + role + '\''
-            + ", author='" + author + '\''
-            + ", email='" + email + '\''
-            + ", time='" + time + '\''
-            + '}';
-    }
+    String getTime();
 
     /**
      * Puzzle builder.
      */
-    public static class Builder {
+    class Builder {
         
         /**
          * Unique ID of the puzzle.
@@ -418,9 +291,76 @@ public final class Puzzle {
             if (this.time == null) {
                 throw new IllegalStateException("Time is missing");
             }
-            return new Puzzle(this.id, this.ticket, this.body,
-                this.estimate, this.file, this.lines, this.role,
-                this.author, this.email, this.time);
+
+            return new Puzzle() {
+
+                @Override
+                public String getId() {
+                    return id;
+                }
+
+                @Override
+                public int getTicket() {
+                    return ticket;
+                }
+
+                @Override
+                public String getBody() {
+                    return body;
+                }
+
+                @Override
+                public int getEstimate() {
+                    return estimate;
+                }
+
+                @Override
+                public String getFile() {
+                    return file;
+                }
+
+                @Override
+                public String getLines() {
+                    return lines;
+                }
+
+                @Override
+                public String getRole() {
+                    return role;
+                }
+
+                @Override
+                public String getAuthor() {
+                    return author;
+                }
+
+                @Override
+                public String getEmail() {
+                    return email;
+                }
+
+                @Override
+                public String getTime() {
+                    return time;
+                }
+
+                @Override
+                public String toString() {
+                    return "Puzzle{"
+                        + "id='" + id + '\''
+                        + ", ticket=" + ticket
+                        + ", body='" + body + '\''
+                        + ", estimate=" + estimate
+                        + ", file='" + file + '\''
+                        + ", lines='" + lines + '\''
+                        + ", role='" + role + '\''
+                        + ", author='" + author + '\''
+                        + ", email='" + email + '\''
+                        + ", time='" + time + '\''
+                        + '}';
+                }
+
+            };
         }
     }
 

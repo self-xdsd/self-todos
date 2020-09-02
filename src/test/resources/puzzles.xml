@@ -1,0 +1,14 @@
+<puzzles>
+    <puzzle>
+        <ticket>516</ticket>
+        <estimate>15</estimate>
+        <role>DEV</role>
+        <id>516-ffc97ad1</id>
+        <lines>61-63</lines>
+        <body>This has to be fixed later...</body>
+        <file>src/test/java/org/takes/SomeTest.java</file>
+        <author>Yegor Bugayenko</author>
+        <email>yegor256@gmail.com</email>
+        <time>2018-01-01T21:09:03Z</time>
+    </puzzle>
+</puzzles>
