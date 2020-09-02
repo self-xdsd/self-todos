@@ -29,7 +29,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 /**
@@ -72,13 +74,15 @@ public class Puzzles {
      * @param name Simple name of the repository.
      * @return Response OK.
      * @throws IOException If something goes wrong.
+     * @throws ParserConfigurationException If something went wrong.
+     * @throws SAXException  If something went wrong.
      */
     @GetMapping(value = "/pdd/{provider}/{owner}/{name}")
     public ResponseEntity<String> readPuzzles(
         @PathVariable final String provider,
         @PathVariable final String owner,
         @PathVariable final String name
-    ) throws IOException {
+    ) throws IOException, ParserConfigurationException, SAXException {
         final ResponseEntity<String> resp;
         final Project project = this.selfCore.projects().getProjectById(
             owner + "/" + name, provider

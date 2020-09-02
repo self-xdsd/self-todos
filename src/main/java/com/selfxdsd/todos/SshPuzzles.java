@@ -27,7 +27,9 @@ import com.jcabi.ssh.Ssh;
 import com.selfxdsd.api.Project;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,8 +40,6 @@ import java.nio.file.Path;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min Transform the puzzles XML string into Java Beans. Most likely
- *  using JAX-B annotations. Don't forget about handling exceptions somehow.
  * @todo #3:30min Customize the script being run (put it into a properties
  *  files and format it with the Project's data).
  */
@@ -62,6 +62,11 @@ public class SshPuzzles {
     );
 
     /**
+     * Puzzles XML parser.
+     */
+    private final PuzzlesXmlParser puzzlesParser = new PuzzlesXmlParser();
+
+    /**
      * Ctor.
      * @throws IOException If any IO problems occur while connecting
      *  to the SSH server.
@@ -71,10 +76,13 @@ public class SshPuzzles {
     /**
      * Handle the puzzles for the given Project.
      * @param project Project.
-     * @return String.
+     * @return Iterable of Puzzle.
      * @throws IOException If something goes wrong.
+     * @throws ParserConfigurationException If something went wrong on parse.
+     * @throws SAXException If something went wrong on parse.
      */
-    public String read(final Project project) throws IOException {
+    public Iterable<Puzzle> read(final Project project) throws IOException,
+        ParserConfigurationException, SAXException {
         this.ssh.exec(
             "cd self-todos-temp && "
                 + "git clone git@github.com:self-xdsd/self-web.git && "
@@ -84,6 +92,6 @@ public class SshPuzzles {
         String puzzles = this.ssh.exec(
             "cd self-todos-temp/self-web && cat ./puzzles.xml"
         );
-        return puzzles;
+        return puzzlesParser.parseForProject(project, puzzles);
     }
 }
