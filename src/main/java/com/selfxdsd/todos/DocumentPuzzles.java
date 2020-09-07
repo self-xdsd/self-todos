@@ -42,6 +42,10 @@ import java.util.List;
  * @author criske
  * @version $Id$
  * @since 0.0.1
+ * @todo #6:30min Add better validation of the String input. If the
+ *  pdd command failed for some reason (e.g. malformed todos in the code),
+ *  it will not be a clean XML. We have to take this info and throw it
+ *  together with the exception.
  */
 public final class DocumentPuzzles implements Puzzles<String> {
 
