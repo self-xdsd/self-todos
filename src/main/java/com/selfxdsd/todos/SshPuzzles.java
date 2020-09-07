@@ -23,67 +23,77 @@
 package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
-import com.jcabi.ssh.Ssh;
 import com.selfxdsd.api.Project;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
+import org.cactoos.io.DeadInput;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
 /**
- * Component which connects to the SSH server via SSH and reads
- * the puzzles.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Representation of pdd puzzles from processing a SSH command.
+ * @author criske
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min Transform the puzzles XML string into Java Beans. Most likely
- *  using JAX-B annotations. Don't forget about handling exceptions somehow.
- * @todo #3:30min Customize the script being run (put it into a properties
- *  files and format it with the Project's data).
+ * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
+ *  for cases when there are invalid documents.
  */
-@Component
-@RequestScope
-public class SshPuzzles {
+public final class SshPuzzles implements Puzzles<Project> {
 
     /**
-     * SSH Connection.
+     * Next puzzles for processing.
      */
-    private final Shell.Plain ssh = new Shell.Plain(
-        new Ssh(
-            System.getenv("host"),
-            Integer.valueOf(System.getenv("port")),
-            System.getenv("username"),
-            Files.readString(
-                Path.of(System.getenv("privatekey"))
-            )
-        )
-    );
+    private final Puzzles<String> next;
+
+    /**
+     * SSH.
+     */
+    private final Shell ssh;
 
     /**
      * Ctor.
-     * @throws IOException If any IO problems occur while connecting
-     *  to the SSH server.
+     * @param ssh SSH.
+     * @param next Next puzzles for processing.
      */
-    public SshPuzzles() throws IOException { }
+    public SshPuzzles(final Shell ssh,
+                      final Puzzles<String> next) {
+        this.ssh = ssh;
+        this.next = next;
+    }
+
+    @Override
+    public void process(final Project project)
+        throws PuzzlesProcessingException {
+        try {
+            this.exec(
+                "cd self-todos-temp && "
+                    + "git clone git@" + project.provider() + ".com:"
+                    + project.repoFullName() + " && "
+                    + "cd self-web && "
+                    + "/Users/amihaiemil/.rbenv/shims/pdd . > puzzles.xml");
+            final String puzzles = this.exec("cd self-todos-temp/self-web "
+                + "&& cat ./puzzles.xml");
+            this.next.process(puzzles);
+        } catch (final IOException exception) {
+            throw new PuzzlesProcessingException(exception);
+        }
+    }
 
     /**
-     * Handle the puzzles for the given Project.
-     * @param project Project.
-     * @return String.
-     * @throws IOException If something goes wrong.
+     * Just exec.
+     * @param cmd Command
+     * @return Stdout
+     * @throws IOException If fails
      */
-    public String read(final Project project) throws IOException {
-        this.ssh.exec(
-            "cd self-todos-temp && "
-                + "git clone git@github.com:self-xdsd/self-web.git && "
-                + "cd self-web && "
-                + "/Users/amihaiemil/.rbenv/shims/pdd . > puzzles.xml"
-        );
-        String puzzles = this.ssh.exec(
-            "cd self-todos-temp/self-web && cat ./puzzles.xml"
-        );
-        return puzzles;
+    public String exec(final String cmd) throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        this.ssh.exec(cmd, new DeadInput().stream(), baos, baos);
+        return baos.toString(StandardCharsets.UTF_8.toString());
+    }
+
+    @Override
+    public Iterator<Puzzle> iterator() {
+        return next.iterator();
     }
 }

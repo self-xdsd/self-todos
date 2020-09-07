@@ -23,21 +23,44 @@
 package com.selfxdsd.todos;
 
 /**
- * Representation of pdd puzzles. It also process the puzzles from
- * an input.
+ * Convenience Exception used by Puzzles processors.
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @param <Input> The type input used for processing.
  */
-public interface Puzzles<Input> extends Iterable<Puzzle> {
+public final class PuzzlesProcessingException extends Exception {
 
     /**
-     * Process the puzzles from the given Input.
-     * These puzzles will be accessible through Iterator.
-     * @param input Input
-     * @throws PuzzlesProcessingException If something went wrong.
+     * Ctor.
      */
-    void process(final Input input) throws PuzzlesProcessingException;
+    public PuzzlesProcessingException() {
+        super();
+    }
+
+    /**
+     * Ctor.
+     * @param message Message.
+     */
+    public PuzzlesProcessingException(final String message) {
+        super(message);
+    }
+
+    /**
+     * Ctor.
+     * @param message Message.
+     * @param cause Cause.
+     */
+    public PuzzlesProcessingException(final String message,
+                                      final Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Ctor.
+     * @param cause Cause.
+     */
+    public PuzzlesProcessingException(final Throwable cause) {
+        super(cause);
+    }
 
 }
