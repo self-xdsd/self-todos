@@ -64,7 +64,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
                 .parse(new InputSource(new StringReader(input)));
             SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                .newSchema(new ClassPathResource("0.19.4.xsd").getFile())
+                .newSchema(new ClassPathResource("0.20.5.xsd").getFile())
                 .newValidator()
                 .validate(new DOMSource(document));
             final Element root = document
