@@ -38,8 +38,6 @@ import java.nio.file.Path;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min Customize the script being run (put it into a properties
- *  files and format it with the Project's data).
  */
 @Component
 @RequestScope

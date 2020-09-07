@@ -29,7 +29,10 @@ import org.cactoos.io.DeadInput;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  * Representation of pdd puzzles from processing a SSH command.
@@ -66,14 +69,18 @@ public final class SshPuzzles implements Puzzles<Project> {
     public void process(final Project project)
         throws PuzzlesProcessingException {
         try {
+            final String id = UUID.randomUUID().toString().replace("-", "");
             this.exec(
-                "cd self-todos-temp && "
-                    + "git clone git@" + project.provider() + ".com:"
-                    + project.repoFullName() + " && "
-                    + "cd self-web && "
-                    + "/Users/amihaiemil/.rbenv/shims/pdd . > puzzles.xml");
-            final String puzzles = this.exec("cd self-todos-temp/self-web "
-                + "&& cat ./puzzles.xml");
+                String.format(
+                    Files.readString(
+                        Path.of("src/main/resources/cloneRepoAndPdd.sh")
+                    ),
+                    id, id, project.provider(), project.repoFullName()
+                )
+            );
+            final String puzzles = this.exec(
+                "cd self-todos-tmp-" + id + "/repo"
+                + " && cat ./puzzles.xml");
             this.next.process(puzzles);
         } catch (final IOException exception) {
             throw new PuzzlesProcessingException(exception);
@@ -88,7 +95,8 @@ public final class SshPuzzles implements Puzzles<Project> {
      */
     public String exec(final String cmd) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        this.ssh.exec(cmd, new DeadInput().stream(), baos, baos);
+        int exit = this.ssh.exec(cmd, new DeadInput().stream(), baos, baos);
+        System.out.println("EXIT CODE >>>> " + exit);
         return baos.toString(StandardCharsets.UTF_8.toString());
     }
 
