@@ -69,19 +69,10 @@ public final class DocumentPuzzles implements Puzzles<String> {
                 .validate(new DOMSource(document));
             final Element root = document
                 .getDocumentElement();
-            if(!root.getNodeName().equals("puzzles")){
-                throw new PuzzlesProcessingException("Invalid document. Root "
-                    + "element must be <puzzles>");
-            }
             final NodeList puzzleTags = root.getElementsByTagName("puzzle");
             for (int i = 0; i < puzzleTags.getLength(); i++) {
                 final Node node = puzzleTags.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    puzzles.add(new PuzzleElement((Element) node));
-                } else {
-                    throw new PuzzlesProcessingException("Invalid document. "
-                        + "Current node must be an element");
-                }
+                puzzles.add(new PuzzleElement((Element) node));
             }
         } catch (final SAXException
             | IOException
