@@ -1,4 +1,6 @@
-<puzzles>
+<puzzles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         version="0.20.5"
+         date="2020-09-07T16:20:26Z">
     <puzzle>
         <ticket>516</ticket>
         <estimate>15</estimate>

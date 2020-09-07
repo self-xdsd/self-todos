@@ -41,6 +41,12 @@ import java.util.UUID;
  * @since 0.0.1
  * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
  *  for cases when there are invalid documents.
+ * @todo #12:30min. Handle SshPuzzles errors output with
+ *  PuzzlesProcessingException. Right now there is one single String output.
+ *  Instead of a String we should have 2 streams one for puzzles and
+ *  one for errors. The puzzle InputStream will processed by DocumentPuzzles
+ *  and the error stream will be collected into a error message and thrown
+ *  as PuzzlesProcessingException in SshPuzzles.
  */
 public final class SshPuzzles implements Puzzles<Project> {
 

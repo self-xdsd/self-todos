@@ -22,14 +22,19 @@
  */
 package com.selfxdsd.todos;
 
+import org.springframework.core.io.ClassPathResource;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -42,10 +47,6 @@ import java.util.List;
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @todo #6:30min Add better validation of the String input. If the
- *  pdd command failed for some reason (e.g. malformed todos in the code),
- *  it will not be a clean XML. We have to take this info and throw it
- *  together with the exception.
  */
 public final class DocumentPuzzles implements Puzzles<String> {
 
@@ -57,10 +58,16 @@ public final class DocumentPuzzles implements Puzzles<String> {
     @Override
     public void process(final String input) throws PuzzlesProcessingException {
         try {
-            final Element root = DocumentBuilderFactory
+            final Document document = DocumentBuilderFactory
                 .newInstance()
                 .newDocumentBuilder()
-                .parse(new InputSource(new StringReader(input)))
+                .parse(new InputSource(new StringReader(input)));
+            SchemaFactory
+                .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+                .newSchema(new ClassPathResource("0.19.4.xsd").getFile())
+                .newValidator()
+                .validate(new DOMSource(document));
+            final Element root = document
                 .getDocumentElement();
             if(!root.getNodeName().equals("puzzles")){
                 throw new PuzzlesProcessingException("Invalid document. Root "
