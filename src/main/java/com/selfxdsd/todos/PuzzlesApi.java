@@ -22,6 +22,8 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Issue;
+import com.selfxdsd.api.Issues;
 import com.selfxdsd.api.Project;
 import com.selfxdsd.api.Self;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,20 +49,20 @@ public class PuzzlesApi {
     /**
      * Puzzles Component.
      */
-    private final PuzzlesComponent puzzles;
+    private final PuzzlesComponent puzzlesComponent;
 
     /**
      * Ctor.
      * @param selfCode Self Core, injected by Spring automatically.
-     * @param puzzles Puzzles Component.
+     * @param puzzlesComponent Puzzles Component.
      */
     @Autowired
     public PuzzlesApi(
         final Self selfCode,
-        final PuzzlesComponent puzzles
+        final PuzzlesComponent puzzlesComponent
     ) {
         this.selfCore = selfCode;
-        this.puzzles = puzzles;
+        this.puzzlesComponent = puzzlesComponent;
     }
 
     /**
@@ -86,9 +88,70 @@ public class PuzzlesApi {
             resp = ResponseEntity.badRequest().build();
         } else {
             resp = ResponseEntity.ok().build();
-            System.out.println(this.puzzles.read(project));
+            final Issues issues = project
+                .projectManager()
+                .provider()
+                .repo(owner, name)
+                .issues();
+            final Puzzles<Project> puzzles = this.puzzlesComponent
+                .read(project);
+            this.openNewTickets(puzzles, issues);
+            this.closeRemovedPuzzles(puzzles, issues);
         }
         return resp;
+    }
+
+    /**
+     * Open new issues for puzzles which don't already have a correspondent.
+     * @param puzzles Puzzles found in the repo.
+     * @param issues Issues API.
+     */
+    private void openNewTickets(
+        final Puzzles<Project> puzzles,
+        final Issues issues
+    ) {
+        for(final Puzzle puzzle : puzzles) {
+            boolean foundIssue = false;
+            for(final Issue issue : issues) {
+                if(issue.json().getString("body").contains(puzzle.getId())) {
+                    foundIssue = true;
+                    break;
+                }
+            }
+            if(!foundIssue) {
+                issues.open(
+                    "", "", "puzzle"
+                );
+            }
+        }
+    }
+
+    /**
+     * Close issues which don't have a corresponding puzzle
+     * (puzzle has been removed from code).
+     * @param puzzles Puzzles found in the repo.
+     * @param issues Issues API.
+     */
+    private void closeRemovedPuzzles(
+        final Puzzles<Project> puzzles,
+        final Issues issues
+    ) {
+        for(final Issue issue : issues) {
+            boolean foundPuzzle = false;
+            for(final Puzzle puzzle : puzzles) {
+                if(issue.json().getString("body").contains(puzzle.getId())) {
+                    foundPuzzle = true;
+                    break;
+                }
+            }
+            if(!foundPuzzle && !issue.isClosed()) {
+                issue.close();
+                issue.comments().post(
+                    "Puzzle disappeared from the code, "
+                    + "that's why I closed this ticket."
+                );
+            }
+        }
     }
 
 }
