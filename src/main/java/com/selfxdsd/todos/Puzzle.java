@@ -110,8 +110,7 @@ public interface Puzzle {
         private String id;
 
         /**
-         * Is a ticket name puzzle marker starts from, in most cases it will be
-         * the number of Provider issue.
+         * The ticket where this puzzle originated from.
          */
         private int ticket;
 

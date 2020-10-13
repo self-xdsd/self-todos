@@ -70,8 +70,10 @@ public class PuzzlesComponent {
      */
     public Puzzles<Project> read(final Project project)
         throws PuzzlesProcessingException {
-        final Puzzles<Project> puzzles = new SshPuzzles(this.ssh,
-            new DocumentPuzzles());
+        final Puzzles<Project> puzzles = new SshPuzzles(
+            this.ssh,
+            new DocumentPuzzles(project)
+        );
         puzzles.process(project);
         return puzzles;
     }

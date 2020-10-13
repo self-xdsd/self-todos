@@ -1,8 +1,10 @@
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Project;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link DocumentPuzzles}.
@@ -19,7 +21,7 @@ public final class DocumentPuzzlesTestCase {
     @Test
     public void canParsePuzzlesFromXml() throws PuzzlesProcessingException {
         final Puzzles<String> puzzles = new ResourcesPuzzles(
-            new DocumentPuzzles()
+            new DocumentPuzzles(Mockito.mock(Project.class))
         );
         puzzles.process("puzzles.xml");
 
