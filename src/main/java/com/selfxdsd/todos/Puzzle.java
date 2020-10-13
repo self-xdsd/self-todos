@@ -94,6 +94,12 @@ public interface Puzzle {
     String getTime();
 
     /**
+     * Get the Issue title.
+     * @return String.
+     */
+    String issueTitle();
+
+    /**
      * Puzzle builder.
      */
     class Builder {
@@ -293,7 +299,6 @@ public interface Puzzle {
             }
 
             return new Puzzle() {
-
                 @Override
                 public String getId() {
                     return id;
@@ -342,6 +347,13 @@ public interface Puzzle {
                 @Override
                 public String getTime() {
                     return time;
+                }
+
+                @Override
+                public String issueTitle() {
+                    final String[] path = this.getFile().split("/");
+                    final String fileName = path[path.length - 1];
+                    return fileName + ": " + this.getBody();
                 }
 
                 @Override
