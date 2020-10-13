@@ -120,7 +120,9 @@ public class PuzzlesApi {
             }
             if(!foundIssue) {
                 issues.open(
-                    "", "", "puzzle"
+                    puzzle.issueTitle(),
+                    "",
+                    "puzzle"
                 );
             }
         }

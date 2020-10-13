@@ -46,6 +46,8 @@ public final class DocumentPuzzlesTestCase {
             Matchers.equalTo("yegor256@gmail.com"));
         MatcherAssert.assertThat(puzzle.getTime(),
             Matchers.equalTo("2018-01-01T21:09:03Z"));
+        MatcherAssert.assertThat(puzzle.issueTitle(),
+            Matchers.equalTo("SomeTest.java: This has to be fixed later..."));
     }
 
 }

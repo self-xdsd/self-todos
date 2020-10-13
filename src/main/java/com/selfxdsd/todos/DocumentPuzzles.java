@@ -167,6 +167,11 @@ public final class DocumentPuzzles implements Puzzles<String> {
             return delegate.getTime();
         }
 
+        @Override
+        public String issueTitle() {
+            return delegate.issueTitle();
+        }
+
         /**
          * Text content from an xml tag.
          * @param parent Parent Node.
