@@ -23,6 +23,11 @@
 package com.selfxdsd.todos;
 
 import com.selfxdsd.api.Project;
+import com.selfxdsd.api.Provider;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Representation of a pdd puzzle.
@@ -385,7 +390,38 @@ public interface Puzzle {
 
                 @Override
                 public String issueBody() {
-                    return null;
+                    String issueBody;
+                    final String provider = project.provider();
+                    final String body;
+                    if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
+                        body = "```\n" + this.getBody() + "\n```\n\n"
+                            + "It is is located at "
+                            + "[" + this.getFile() + "#" + this.getLines()
+                            + "](" + "https://github.com/"
+                            + project.repoFullName()
+                            + "/blob/master/" + this.getFile()
+                            + "#" + this.getLines() + ").";
+                    } else {
+                        body = "\"" + this.getBody() + "\"\n\n"
+                            + "It is located at " + this.getFile()
+                            + "#" + this.getLines() + ". ";
+                    }
+                    try {
+                        issueBody = String.format(
+                            Files.readString(
+                                Path.of("src/main/resources/issueBody.txt")
+                            ),
+                            this.getId(),
+                            "#" + this.getTicket(),
+                            body,
+                            this.getAuthor(),
+                            this.getTime(),
+                            this.getEstimate()
+                        );
+                    } catch (final IOException ex) {
+                        issueBody = this.getBody();
+                    }
+                    return issueBody;
                 }
 
                 @Override

@@ -27,7 +27,6 @@ public final class DocumentPuzzlesTestCase {
 
         MatcherAssert.assertThat(puzzles, Matchers.iterableWithSize(1));
         final Puzzle puzzle = puzzles.iterator().next();
-
         MatcherAssert.assertThat(puzzle.getId(),
             Matchers.equalTo("516-ffc97ad1"));
         MatcherAssert.assertThat(puzzle.getTicket(),
