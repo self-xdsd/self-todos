@@ -22,6 +22,8 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Project;
+
 /**
  * Representation of a pdd puzzle.
  * @author criske
@@ -103,7 +105,12 @@ public interface Puzzle {
      * Puzzle builder.
      */
     class Builder {
-        
+
+        /**
+         * Project where the puzzle comes from.
+         */
+        private Project project;
+
         /**
          * Unique ID of the puzzle.
          */
@@ -157,6 +164,16 @@ public interface Puzzle {
          * Timestamp creation of the puzzle.
          */
         private String time;
+
+        /**
+         * Sets the Project.
+         * @param project Project.
+         * @return Builder.
+         */
+        public Builder setProject(final Project project) {
+            this.project = project;
+            return this;
+        }
 
         /**
          * Sets the id.

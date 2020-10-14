@@ -104,7 +104,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
     /**
      * Puzzle representation from a DOM Element.
      */
-    private static final class PuzzleElement implements Puzzle{
+    private final class PuzzleElement implements Puzzle{
 
         /**
          * Delegate.
@@ -117,6 +117,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
          */
         private PuzzleElement(final Element element){
             this.delegate = new Puzzle.Builder()
+                .setProject(DocumentPuzzles.this.project)
                 .setId(this.textContext(element, "id"))
                 .setTicket(Integer
                     .parseInt(this.textContext(element, "ticket")))
