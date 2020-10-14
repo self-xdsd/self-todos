@@ -121,7 +121,7 @@ public class PuzzlesApi {
             if(!foundIssue) {
                 issues.open(
                     puzzle.issueTitle(),
-                    "",
+                    puzzle.issueBody(),
                     "puzzle"
                 );
             }
