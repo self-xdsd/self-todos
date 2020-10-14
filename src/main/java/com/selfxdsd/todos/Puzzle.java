@@ -385,7 +385,15 @@ public interface Puzzle {
                 public String issueTitle() {
                     final String[] path = this.getFile().split("/");
                     final String fileName = path[path.length - 1];
-                    return fileName + ": " + this.getBody();
+                    final String body = this.getBody();
+                    final String bodySnippet;
+                    if(body.length() < 30) {
+                        bodySnippet = body;
+                    } else {
+                        bodySnippet = body.substring(0, 29) + "... ";
+                    }
+
+                    return fileName + ": " + bodySnippet;
                 }
 
                 @Override
@@ -394,7 +402,7 @@ public interface Puzzle {
                     final String provider = project.provider();
                     final String body;
                     if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
-                        body = "```\n" + this.getBody() + "\n```\n\n"
+                        body = "\"\n" + this.getBody() + "\n\"\n\n"
                             + "It is is located at "
                             + "[" + this.getFile() + "#" + this.getLines()
                             + "](" + "https://github.com/"

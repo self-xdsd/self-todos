@@ -23,9 +23,11 @@
 package com.selfxdsd.todos;
 
 import com.selfxdsd.api.*;
+import com.selfxdsd.core.Env;
 import com.selfxdsd.core.SelfCore;
 import com.selfxdsd.storage.MySql;
 import com.selfxdsd.storage.SelfJooq;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,9 +45,9 @@ public final class SelfCoreComponent implements Self {
     private final Self core = new SelfCore(
         new SelfJooq(
             new MySql(
-                System.getenv("db.url"),
-                System.getenv("db.user"),
-                System.getenv("db.password")
+                System.getenv(Env.DB_URL),
+                System.getenv(Env.DB_USER),
+                System.getenv(Env.DB_PASSWORD)
             )
         )
     );
