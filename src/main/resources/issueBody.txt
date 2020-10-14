@@ -1,4 +1,4 @@
-The puzzle ``%s`` from %s has to be resolved:
+The puzzle ``%s`` originating from %s has to be resolved:
 
 %s
 
