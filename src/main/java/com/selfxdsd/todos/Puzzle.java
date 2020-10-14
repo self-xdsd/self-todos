@@ -102,6 +102,12 @@ public interface Puzzle {
     String issueTitle();
 
     /**
+     * Get the Issue body.
+     * @return String.
+     */
+    String issueBody();
+
+    /**
      * Puzzle builder.
      */
     class Builder {
@@ -281,8 +287,12 @@ public interface Puzzle {
          * @throws IllegalStateException if one of the fields are missing.
          * @checkstyle CyclomaticComplexity (100 lines).
          * @checkstyle NPathComplexity (100 lines).
+         * @checkstyle JavaNCSS (100 lines).
          */
         public Puzzle build() {
+            if (this.project == null) {
+                throw new IllegalStateException("Project is missing");
+            }
             if (this.id == null) {
                 throw new IllegalStateException("Id is missing");
             }
@@ -342,7 +352,8 @@ public interface Puzzle {
 
                 @Override
                 public String getLines() {
-                    return lines;
+                    final String[] numbers = lines.split("-");
+                    return "L" + numbers[0] + "-L" + numbers[1];
                 }
 
                 @Override
@@ -370,6 +381,11 @@ public interface Puzzle {
                     final String[] path = this.getFile().split("/");
                     final String fileName = path[path.length - 1];
                     return fileName + ": " + this.getBody();
+                }
+
+                @Override
+                public String issueBody() {
+                    return null;
                 }
 
                 @Override

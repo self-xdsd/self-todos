@@ -188,6 +188,11 @@ public final class DocumentPuzzles implements Puzzles<String> {
             return delegate.issueTitle();
         }
 
+        @Override
+        public String issueBody() {
+            return delegate.issueBody();
+        }
+
         /**
          * Text content from an xml tag.
          * @param parent Parent Node.

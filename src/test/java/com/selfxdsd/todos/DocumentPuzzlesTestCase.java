@@ -37,7 +37,7 @@ public final class DocumentPuzzlesTestCase {
         MatcherAssert.assertThat(puzzle.getRole(),
             Matchers.equalTo("DEV"));
         MatcherAssert.assertThat(puzzle.getLines(),
-            Matchers.equalTo("61-63"));
+            Matchers.equalTo("L61-L63"));
         MatcherAssert.assertThat(puzzle.getBody(),
             Matchers.equalTo("This has to be fixed later..."));
         MatcherAssert.assertThat(puzzle.getFile(),
