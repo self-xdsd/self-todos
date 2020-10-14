@@ -1,0 +1,6 @@
+The TODO ``%s`` from %s has to be resolved:
+
+%s
+
+It was created by %s on %s. Estimation is ``%s minutes``.
+If you have any technical questions, don't ask me, I won't be able to help. Open new issues instead.

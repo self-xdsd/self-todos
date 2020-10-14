@@ -22,6 +22,7 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Project;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,9 +52,23 @@ import java.util.List;
 public final class DocumentPuzzles implements Puzzles<String> {
 
     /**
+     * Project where these puzzles are coming from.
+     */
+    private final Project project;
+
+    /**
      * Processed puzzles.
      */
-    private final List<Puzzle> puzzles = new ArrayList<>();
+    private final List<Puzzle> puzzles;
+
+    /**
+     * Ctor.
+     * @param project Project where these puzzles are coming from.
+     */
+    public DocumentPuzzles(final Project project) {
+        this.project = project;
+        this.puzzles = new ArrayList<>();
+    }
 
     @Override
     public void process(final String input) throws PuzzlesProcessingException {
@@ -89,7 +104,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
     /**
      * Puzzle representation from a DOM Element.
      */
-    private static final class PuzzleElement implements Puzzle{
+    private final class PuzzleElement implements Puzzle{
 
         /**
          * Delegate.
@@ -102,6 +117,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
          */
         private PuzzleElement(final Element element){
             this.delegate = new Puzzle.Builder()
+                .setProject(DocumentPuzzles.this.project)
                 .setId(this.textContext(element, "id"))
                 .setTicket(Integer
                     .parseInt(this.textContext(element, "ticket")))
@@ -170,6 +186,11 @@ public final class DocumentPuzzles implements Puzzles<String> {
         @Override
         public String issueTitle() {
             return delegate.issueTitle();
+        }
+
+        @Override
+        public String issueBody() {
+            return delegate.issueBody();
         }
 
         /**

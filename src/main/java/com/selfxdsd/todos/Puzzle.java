@@ -22,13 +22,21 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Project;
+import com.selfxdsd.api.Provider;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * Representation of a pdd puzzle.
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @checkstyle HiddenField (500 lines).
- * @checkstyle ParameterNumber (500 lines).
+ * @checkstyle HiddenField (1000 lines).
+ * @checkstyle ParameterNumber (1000 lines).
+ * @checkstyle MethodLength (1000 lines)
  */
 public interface Puzzle {
 
@@ -100,18 +108,28 @@ public interface Puzzle {
     String issueTitle();
 
     /**
+     * Get the Issue body.
+     * @return String.
+     */
+    String issueBody();
+
+    /**
      * Puzzle builder.
      */
     class Builder {
-        
+
+        /**
+         * Project where the puzzle comes from.
+         */
+        private Project project;
+
         /**
          * Unique ID of the puzzle.
          */
         private String id;
 
         /**
-         * Is a ticket name puzzle marker starts from, in most cases it will be
-         * the number of Provider issue.
+         * The ticket where this puzzle originated from.
          */
         private int ticket;
 
@@ -158,6 +176,16 @@ public interface Puzzle {
          * Timestamp creation of the puzzle.
          */
         private String time;
+
+        /**
+         * Sets the Project.
+         * @param project Project.
+         * @return Builder.
+         */
+        public Builder setProject(final Project project) {
+            this.project = project;
+            return this;
+        }
 
         /**
          * Sets the id.
@@ -265,8 +293,12 @@ public interface Puzzle {
          * @throws IllegalStateException if one of the fields are missing.
          * @checkstyle CyclomaticComplexity (100 lines).
          * @checkstyle NPathComplexity (100 lines).
+         * @checkstyle JavaNCSS (100 lines).
          */
         public Puzzle build() {
+            if (this.project == null) {
+                throw new IllegalStateException("Project is missing");
+            }
             if (this.id == null) {
                 throw new IllegalStateException("Id is missing");
             }
@@ -326,7 +358,8 @@ public interface Puzzle {
 
                 @Override
                 public String getLines() {
-                    return lines;
+                    final String[] numbers = lines.split("-");
+                    return "L" + numbers[0] + "-L" + numbers[1];
                 }
 
                 @Override
@@ -353,7 +386,51 @@ public interface Puzzle {
                 public String issueTitle() {
                     final String[] path = this.getFile().split("/");
                     final String fileName = path[path.length - 1];
-                    return fileName + ": " + this.getBody();
+                    final String body = this.getBody();
+                    final String bodySnippet;
+                    if(body.length() < 30) {
+                        bodySnippet = body;
+                    } else {
+                        bodySnippet = body.substring(0, 29) + "... ";
+                    }
+
+                    return fileName + ": " + bodySnippet;
+                }
+
+                @Override
+                public String issueBody() {
+                    String issueBody;
+                    final String provider = project.provider();
+                    final String body;
+                    if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
+                        body = "\"\n" + this.getBody() + "\n\"\n\n"
+                            + "It is is located at "
+                            + "[" + this.getFile() + "#" + this.getLines()
+                            + "](" + "https://github.com/"
+                            + project.repoFullName()
+                            + "/blob/master/" + this.getFile()
+                            + "#" + this.getLines() + ").";
+                    } else {
+                        body = "\"" + this.getBody() + "\"\n\n"
+                            + "It is located at " + this.getFile()
+                            + "#" + this.getLines() + ". ";
+                    }
+                    try {
+                        issueBody = String.format(
+                            Files.readString(
+                                Path.of("src/main/resources/issueBody.txt")
+                            ),
+                            this.getId(),
+                            "#" + this.getTicket(),
+                            body,
+                            this.getAuthor(),
+                            this.getTime(),
+                            this.getEstimate()
+                        );
+                    } catch (final IOException ex) {
+                        issueBody = this.getBody();
+                    }
+                    return issueBody;
                 }
 
                 @Override

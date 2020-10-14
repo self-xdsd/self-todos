@@ -37,6 +37,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #16:30min Once we have Issues.search(...) method in self-core,
+ *  we should search for the Issues with label "puzzle", we are only
+ *  interested in those (at the moment all the Issues are being used).
+ * @todo #16:30min Make the endpoint call asynchronous. At the moment
+ *  the client has to wait until the repo is cloned, pdd is run atc,
+ *  which takes a few seconds.
  */
 @RestController
 public class PuzzlesApi {
@@ -121,7 +127,7 @@ public class PuzzlesApi {
             if(!foundIssue) {
                 issues.open(
                     puzzle.issueTitle(),
-                    "",
+                    puzzle.issueBody(),
                     "puzzle"
                 );
             }

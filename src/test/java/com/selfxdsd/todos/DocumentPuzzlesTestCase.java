@@ -1,8 +1,10 @@
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Project;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link DocumentPuzzles}.
@@ -19,13 +21,12 @@ public final class DocumentPuzzlesTestCase {
     @Test
     public void canParsePuzzlesFromXml() throws PuzzlesProcessingException {
         final Puzzles<String> puzzles = new ResourcesPuzzles(
-            new DocumentPuzzles()
+            new DocumentPuzzles(Mockito.mock(Project.class))
         );
         puzzles.process("puzzles.xml");
 
         MatcherAssert.assertThat(puzzles, Matchers.iterableWithSize(1));
         final Puzzle puzzle = puzzles.iterator().next();
-
         MatcherAssert.assertThat(puzzle.getId(),
             Matchers.equalTo("516-ffc97ad1"));
         MatcherAssert.assertThat(puzzle.getTicket(),
@@ -35,7 +36,7 @@ public final class DocumentPuzzlesTestCase {
         MatcherAssert.assertThat(puzzle.getRole(),
             Matchers.equalTo("DEV"));
         MatcherAssert.assertThat(puzzle.getLines(),
-            Matchers.equalTo("61-63"));
+            Matchers.equalTo("L61-L63"));
         MatcherAssert.assertThat(puzzle.getBody(),
             Matchers.equalTo("This has to be fixed later..."));
         MatcherAssert.assertThat(puzzle.getFile(),
