@@ -27,7 +27,6 @@ import com.selfxdsd.core.Env;
 import com.selfxdsd.core.SelfCore;
 import com.selfxdsd.storage.MySql;
 import com.selfxdsd.storage.SelfJooq;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**

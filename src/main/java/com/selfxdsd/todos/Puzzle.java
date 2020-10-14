@@ -34,8 +34,9 @@ import java.nio.file.Path;
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @checkstyle HiddenField (500 lines).
- * @checkstyle ParameterNumber (500 lines).
+ * @checkstyle HiddenField (1000 lines).
+ * @checkstyle ParameterNumber (1000 lines).
+ * @checkstyle MethodLength (1000 lines)
  */
 public interface Puzzle {
 
