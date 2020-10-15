@@ -1,4 +1,5 @@
 <puzzles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://pdd-xsd.teamed.io/0.20.5.xsd"
          version="0.20.5"
          date="2020-09-07T16:20:26Z">
     <puzzle>
