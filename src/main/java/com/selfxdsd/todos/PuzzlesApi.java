@@ -22,8 +22,6 @@
  */
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.Issue;
-import com.selfxdsd.api.Issues;
 import com.selfxdsd.api.Project;
 import com.selfxdsd.api.Self;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @todo #16:30min Once we have Issues.search(...) method in self-core,
  *  we should search for the Issues with label "puzzle", we are only
  *  interested in those (at the moment all the Issues are being used).
- * @todo #16:30min Make the endpoint call asynchronous. At the moment
- *  the client has to wait until the repo is cloned, pdd is run atc,
- *  which takes a few seconds.
  */
 @RestController
 public class PuzzlesApi {
@@ -90,76 +85,12 @@ public class PuzzlesApi {
         final Project project = this.selfCore.projects().getProjectById(
             owner + "/" + name, provider
         );
-        if(project == null) {
+        if (project == null) {
             resp = ResponseEntity.badRequest().build();
         } else {
+            this.puzzlesComponent.review(project);
             resp = ResponseEntity.ok().build();
-            final Issues issues = project
-                .projectManager()
-                .provider()
-                .repo(owner, name)
-                .issues();
-            final Puzzles<Project> puzzles = this.puzzlesComponent
-                .read(project);
-            this.openNewTickets(puzzles, issues);
-            this.closeRemovedPuzzles(puzzles, issues);
         }
         return resp;
     }
-
-    /**
-     * Open new issues for puzzles which don't already have a correspondent.
-     * @param puzzles Puzzles found in the repo.
-     * @param issues Issues API.
-     */
-    private void openNewTickets(
-        final Puzzles<Project> puzzles,
-        final Issues issues
-    ) {
-        for(final Puzzle puzzle : puzzles) {
-            boolean foundIssue = false;
-            for(final Issue issue : issues) {
-                if(issue.json().getString("body").contains(puzzle.getId())) {
-                    foundIssue = true;
-                    break;
-                }
-            }
-            if(!foundIssue) {
-                issues.open(
-                    puzzle.issueTitle(),
-                    puzzle.issueBody(),
-                    "puzzle"
-                );
-            }
-        }
-    }
-
-    /**
-     * Close issues which don't have a corresponding puzzle
-     * (puzzle has been removed from code).
-     * @param puzzles Puzzles found in the repo.
-     * @param issues Issues API.
-     */
-    private void closeRemovedPuzzles(
-        final Puzzles<Project> puzzles,
-        final Issues issues
-    ) {
-        for(final Issue issue : issues) {
-            boolean foundPuzzle = false;
-            for(final Puzzle puzzle : puzzles) {
-                if(issue.json().getString("body").contains(puzzle.getId())) {
-                    foundPuzzle = true;
-                    break;
-                }
-            }
-            if(!foundPuzzle && !issue.isClosed()) {
-                issue.close();
-                issue.comments().post(
-                    "Puzzle disappeared from the code, "
-                    + "that's why I closed this ticket."
-                );
-            }
-        }
-    }
-
 }

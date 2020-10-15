@@ -24,7 +24,10 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.jcabi.ssh.Ssh;
+import com.selfxdsd.api.Issue;
+import com.selfxdsd.api.Issues;
 import com.selfxdsd.api.Project;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -33,8 +36,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Component which connects to the SSH server via SSH and reads
- * the puzzles.
+ * Component which connects to the SSH server via SSH, reads
+ * the puzzles and opens/closes issues based on them.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
@@ -62,19 +65,86 @@ public class PuzzlesComponent {
     public PuzzlesComponent() throws IOException { }
 
     /**
-     * Handle the puzzles for the given Project.
+     * Review the puzzles of the given Project. If it's a new puzzle,
+     * open an Issue for it. If the Project contains open Issues which
+     * don't have a corresponding puzzle, close them.
      * @param project Project.
-     * @return Iterable of Puzzle.
      * @throws PuzzlesProcessingException If something went wrong during
      * processing the puzzles.
      */
-    public Puzzles<Project> read(final Project project)
+    @Async
+    public void review(final Project project)
         throws PuzzlesProcessingException {
         final Puzzles<Project> puzzles = new SshPuzzles(
             this.ssh,
             new DocumentPuzzles(project)
         );
         puzzles.process(project);
-        return puzzles;
+
+        final String owner = project.repoFullName().split("/")[0];
+        final String name = project.repoFullName().split("/")[1];
+
+        final Issues issues = project
+            .projectManager()
+            .provider()
+            .repo(owner, name)
+            .issues();
+        this.openNewTickets(puzzles, issues);
+        this.closeRemovedPuzzles(puzzles, issues);
+    }
+
+    /**
+     * Open new issues for puzzles which don't already have a correspondent.
+     * @param puzzles Puzzles found in the repo.
+     * @param issues Issues API.
+     */
+    private void openNewTickets(
+        final Puzzles<Project> puzzles,
+        final Issues issues
+    ) {
+        for(final Puzzle puzzle : puzzles) {
+            boolean foundIssue = false;
+            for(final Issue issue : issues) {
+                if(issue.json().getString("body").contains(puzzle.getId())) {
+                    foundIssue = true;
+                    break;
+                }
+            }
+            if(!foundIssue) {
+                issues.open(
+                    puzzle.issueTitle(),
+                    puzzle.issueBody(),
+                    "puzzle"
+                );
+            }
+        }
+    }
+
+    /**
+     * Close issues which don't have a corresponding puzzle
+     * (puzzle has been removed from code).
+     * @param puzzles Puzzles found in the repo.
+     * @param issues Issues API.
+     */
+    private void closeRemovedPuzzles(
+        final Puzzles<Project> puzzles,
+        final Issues issues
+    ) {
+        for(final Issue issue : issues) {
+            boolean foundPuzzle = false;
+            for(final Puzzle puzzle : puzzles) {
+                if(issue.json().getString("body").contains(puzzle.getId())) {
+                    foundPuzzle = true;
+                    break;
+                }
+            }
+            if(!foundPuzzle && !issue.isClosed()) {
+                issue.close();
+                issue.comments().post(
+                    "Puzzle disappeared from the code, "
+                    + "that's why I closed this ticket."
+                );
+            }
+        }
     }
 }
