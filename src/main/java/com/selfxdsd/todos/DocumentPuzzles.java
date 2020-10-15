@@ -73,8 +73,14 @@ public final class DocumentPuzzles implements Puzzles<String> {
     @Override
     public void process(final String input) throws PuzzlesProcessingException {
         try {
-            final Document document = DocumentBuilderFactory
-                .newInstance()
+            final String schemaLanguage =
+                "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+            final String schema = "http://www.w3.org/2001/XMLSchema";
+            DocumentBuilderFactory factory = DocumentBuilderFactory
+                .newInstance();
+            factory.setNamespaceAware(true);
+            factory.setAttribute(schemaLanguage, schema);
+            final Document document = factory
                 .newDocumentBuilder()
                 .parse(new InputSource(new StringReader(input)));
             SchemaFactory
