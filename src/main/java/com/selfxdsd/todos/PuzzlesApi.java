@@ -22,23 +22,21 @@
  */
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.Project;
-import com.selfxdsd.api.Self;
+import com.selfxdsd.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import java.io.StringReader;
 
 /**
  * Puzzles REST Controller.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #19:60min Accept the push event as RequestBody parameter
- *  in the reviewPuzzles method, then wrap it inside an Event. We
- *  need this because we will need access to the Commit which triggered
- *  the event.
  */
 @RestController
 public class PuzzlesApi {
@@ -72,15 +70,21 @@ public class PuzzlesApi {
      * @param provider Provider name (github, gitlab etc).
      * @param owner Owner login (user or organization name).
      * @param name Simple name of the repository.
+     * @param payload Payload of the PUSH event that triggered everything.
      * @return Response OK.
+     * @checkstyle ParameterNumber (40 lines)
      * @throws PuzzlesProcessingException Something went wrong during reading
      *  puzzles.
      */
-    @GetMapping(value = "/pdd/{provider}/{owner}/{name}")
+    @PostMapping(
+        value = "/pdd/{provider}/{owner}/{name}",
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<String> reviewPuzzles(
         @PathVariable final String provider,
         @PathVariable final String owner,
-        @PathVariable final String name
+        @PathVariable final String name,
+        @RequestBody final String payload
     ) throws PuzzlesProcessingException {
         final ResponseEntity<String> resp;
         final Project project = this.selfCore.projects().getProjectById(
@@ -89,7 +93,40 @@ public class PuzzlesApi {
         if (project == null) {
             resp = ResponseEntity.badRequest().build();
         } else {
-            this.puzzlesComponent.review(project);
+            this.puzzlesComponent.review(
+                new Event() {
+                    /**
+                     * Event payload.
+                     */
+                    private final JsonObject event = Json.createReader(
+                        new StringReader(payload)
+                    ).readObject();
+
+                    @Override
+                    public String type() {
+                        return "push";
+                    }
+
+                    @Override
+                    public Issue issue() {
+                        throw new UnsupportedOperationException(
+                            "No Issue in the PUSH Event"
+                        );
+                    }
+
+                    @Override
+                    public Comment comment() {
+                        throw new UnsupportedOperationException(
+                            "No Comment in the PUSH Event"
+                        );
+                    }
+
+                    @Override
+                    public Project project() {
+                        return project;
+                    }
+                }
+            );
             resp = ResponseEntity.ok().build();
         }
         return resp;

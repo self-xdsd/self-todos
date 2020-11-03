@@ -24,6 +24,7 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.jcabi.ssh.Ssh;
+import com.selfxdsd.api.Event;
 import com.selfxdsd.api.Issue;
 import com.selfxdsd.api.Issues;
 import com.selfxdsd.api.Project;
@@ -41,6 +42,11 @@ import java.nio.file.Path;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #24:60min Pass on the Event to the puzzle-processing
+ *  objects. If there is any problem while processing the puzzles,
+ *  we should post a comment on the Commit which triggered the event
+ *  and let the author know about the issue. We have to wait for
+ *  self-core 0.0.31, which will have the Event.commit() method.
  */
 @Component
 @RequestScope
@@ -69,13 +75,14 @@ public class PuzzlesComponent {
      * Review the puzzles of the given Project. If it's a new puzzle,
      * open an Issue for it. If the Project contains open Issues which
      * don't have a corresponding puzzle, close them.
-     * @param project Project.
+     * @param event Event that triggered it.
      * @throws PuzzlesProcessingException If something went wrong during
      * processing the puzzles.
      */
     @Async
-    public void review(final Project project)
+    public void review(final Event event)
         throws PuzzlesProcessingException {
+        final Project project = event.project();
         final Puzzles<Project> puzzles = new SshPuzzles(
             this.ssh,
             new DocumentPuzzles(project)
