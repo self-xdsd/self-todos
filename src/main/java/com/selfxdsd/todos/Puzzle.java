@@ -41,6 +41,11 @@ import java.nio.file.Path;
 public interface Puzzle {
 
     /**
+     * Label which should be present on the Puzzle issues.
+     */
+    String LABEL = "puzzle";
+
+    /**
      * Unique ID of the puzzle.
      * @return String.
      */
