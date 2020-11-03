@@ -35,9 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #16:30min Once we have Issues.search(...) method in self-core,
- *  we should search for the Issues with label "puzzle", we are only
- *  interested in those (at the moment all the Issues are being used).
+ * @todo #19:60min Accept the push event as RequestBody parameter
+ *  in the reviewPuzzles method, then wrap it inside an Event. We
+ *  need this because we will need access to the Commit which triggered
+ *  the event.
  */
 @RestController
 public class PuzzlesApi {
@@ -76,7 +77,7 @@ public class PuzzlesApi {
      *  puzzles.
      */
     @GetMapping(value = "/pdd/{provider}/{owner}/{name}")
-    public ResponseEntity<String> readPuzzles(
+    public ResponseEntity<String> reviewPuzzles(
         @PathVariable final String provider,
         @PathVariable final String owner,
         @PathVariable final String name

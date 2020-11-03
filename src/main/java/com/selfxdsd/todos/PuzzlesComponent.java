@@ -36,7 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Component which connects to the SSH server via SSH, reads
+ * Component which connects to a server via SSH, reads
  * the puzzles and opens/closes issues based on them.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
@@ -50,12 +50,13 @@ public class PuzzlesComponent {
      * SSH Connection.
      */
     private final Shell ssh = new Ssh(
-        System.getenv("host"),
-        Integer.valueOf(System.getenv("port")),
-        System.getenv("username"),
+        System.getenv("self_pdd_host"),
+        Integer.valueOf(System.getenv("self_pdd_port")),
+        System.getenv("self_pdd_username"),
         Files.readString(
-            Path.of(System.getenv("privatekey"))
-        ));
+            Path.of(System.getenv("self_pdd_privatekey"))
+        )
+    );
 
     /**
      * Ctor.
@@ -88,7 +89,8 @@ public class PuzzlesComponent {
             .projectManager()
             .provider()
             .repo(owner, name)
-            .issues();
+            .issues()
+            .search("", Puzzle.LABEL);
         this.openNewTickets(puzzles, issues);
         this.closeRemovedPuzzles(puzzles, issues);
     }
@@ -114,7 +116,7 @@ public class PuzzlesComponent {
                 issues.open(
                     puzzle.issueTitle(),
                     puzzle.issueBody(),
-                    "puzzle"
+                    Puzzle.LABEL
                 );
             }
         }
