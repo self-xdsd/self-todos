@@ -144,7 +144,7 @@ public class PuzzlesComponent {
         if(opened.size() > 0) {
             commit.comments().post(
                 "@" + commit.author() + " I've opened the Issues "
-                + opened + " for the newly added TODOs."
+                + opened + " for the newly added to-dos."
             );
         }
     }
@@ -182,7 +182,7 @@ public class PuzzlesComponent {
         if(closed.size() > 0) {
             commit.comments().post(
                 "@" + commit.author() + " I've closed the Issues "
-                + closed + " because their TODOs disappeared from the code."
+                + closed + " because their to-dos disappeared from the code."
             );
         }
     }
