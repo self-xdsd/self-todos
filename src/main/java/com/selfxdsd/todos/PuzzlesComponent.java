@@ -35,6 +35,8 @@ import org.springframework.web.context.annotation.RequestScope;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component which connects to a server via SSH, reads
@@ -99,8 +101,8 @@ public class PuzzlesComponent {
                 .repo(owner, name)
                 .issues()
                 .search("", Puzzle.LABEL);
-            this.openNewTickets(puzzles, issues);
-            this.closeRemovedPuzzles(puzzles, issues);
+            this.openNewTickets(puzzles, issues, commit);
+            this.closeRemovedPuzzles(puzzles, issues, commit);
         } catch (final PuzzlesProcessingException ex) {
             LOG.error(
                 "Exception while processing puzzles for Project "
@@ -114,11 +116,14 @@ public class PuzzlesComponent {
      * Open new issues for puzzles which don't already have a correspondent.
      * @param puzzles Puzzles found in the repo.
      * @param issues Issues API.
+     * @param commit Commit which triggered everything.
      */
     private void openNewTickets(
         final Puzzles<Project> puzzles,
-        final Issues issues
+        final Issues issues,
+        final Commit commit
     ) {
+        final List<String> opened = new ArrayList<>();
         for(final Puzzle puzzle : puzzles) {
             boolean foundIssue = false;
             for(final Issue issue : issues) {
@@ -128,12 +133,19 @@ public class PuzzlesComponent {
                 }
             }
             if(!foundIssue) {
-                issues.open(
+                final Issue newIssue = issues.open(
                     puzzle.issueTitle(),
                     puzzle.issueBody(),
                     Puzzle.LABEL
                 );
+                opened.add("#" + newIssue.issueId());
             }
+        }
+        if(opened.size() > 0) {
+            commit.comments().post(
+                "@" + commit.author() + " I've opened the Issues "
+                + opened + " for the newly added TODOs."
+            );
         }
     }
 
@@ -142,11 +154,14 @@ public class PuzzlesComponent {
      * (puzzle has been removed from code).
      * @param puzzles Puzzles found in the repo.
      * @param issues Issues API.
+     * @param commit Commit which triggered everything.
      */
     private void closeRemovedPuzzles(
         final Puzzles<Project> puzzles,
-        final Issues issues
+        final Issues issues,
+        final Commit commit
     ) {
+        final List<String> closed = new ArrayList<>();
         for(final Issue issue : issues) {
             boolean foundPuzzle = false;
             for(final Puzzle puzzle : puzzles) {
@@ -161,7 +176,14 @@ public class PuzzlesComponent {
                     "Puzzle disappeared from the code, "
                     + "that's why I closed this ticket."
                 );
+                closed.add("#" + issue.issueId());
             }
+        }
+        if(closed.size() > 0) {
+            commit.comments().post(
+                "@" + commit.author() + " I've closed the Issues "
+                + closed + " because their TODOs disappeared from the code."
+            );
         }
     }
 }
