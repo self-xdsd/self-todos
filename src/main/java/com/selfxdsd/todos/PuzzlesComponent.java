@@ -26,6 +26,8 @@ import com.jcabi.ssh.Shell;
 import com.jcabi.ssh.Ssh;
 import com.selfxdsd.api.*;
 import com.selfxdsd.core.Env;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -44,6 +46,13 @@ import java.nio.file.Path;
 @Component
 @RequestScope
 public class PuzzlesComponent {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(
+        PuzzlesComponent.class
+    );
 
     /**
      * SSH Connection.
@@ -69,31 +78,36 @@ public class PuzzlesComponent {
      * open an Issue for it. If the Project contains open Issues which
      * don't have a corresponding puzzle, close them.
      * @param event Event that triggered it.
-     * @throws PuzzlesProcessingException If something went wrong during
      * processing the puzzles.
      */
     @Async
-    public void review(final Event event)
-        throws PuzzlesProcessingException {
+    public void review(final Event event) {
         final Project project = event.project();
         final Commit commit = event.commit();
         final Puzzles<Project> puzzles = new SshPuzzles(
             this.ssh,
             new DocumentPuzzles(project, commit)
         );
-        puzzles.process(project);
+        try {
+            puzzles.process(project);
+            final String owner = project.repoFullName().split("/")[0];
+            final String name = project.repoFullName().split("/")[1];
 
-        final String owner = project.repoFullName().split("/")[0];
-        final String name = project.repoFullName().split("/")[1];
-
-        final Issues issues = project
-            .projectManager()
-            .provider()
-            .repo(owner, name)
-            .issues()
-            .search("", Puzzle.LABEL);
-        this.openNewTickets(puzzles, issues);
-        this.closeRemovedPuzzles(puzzles, issues);
+            final Issues issues = project
+                .projectManager()
+                .provider()
+                .repo(owner, name)
+                .issues()
+                .search("", Puzzle.LABEL);
+            this.openNewTickets(puzzles, issues);
+            this.closeRemovedPuzzles(puzzles, issues);
+        } catch (final PuzzlesProcessingException ex) {
+            LOG.error(
+                "Exception while processing puzzles for Project "
+                + project.repoFullName() + " at " + project.provider() + ": ",
+                ex
+            );
+        }
     }
 
     /**

@@ -88,7 +88,7 @@ public class PuzzlesApi {
         @PathVariable final String owner,
         @PathVariable final String name,
         @RequestBody final String payload
-    ) throws PuzzlesProcessingException {
+    ) {
         final ResponseEntity<String> resp;
         final Project project = this.selfCore.projects().getProjectById(
             owner + "/" + name, provider
