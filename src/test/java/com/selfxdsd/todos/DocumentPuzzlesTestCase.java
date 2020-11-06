@@ -1,5 +1,6 @@
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Commit;
 import com.selfxdsd.api.Project;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -21,7 +22,10 @@ public final class DocumentPuzzlesTestCase {
     @Test
     public void canParsePuzzlesFromXml() throws PuzzlesProcessingException {
         final Puzzles<String> puzzles = new ResourcesPuzzles(
-            new DocumentPuzzles(Mockito.mock(Project.class))
+            new DocumentPuzzles(
+                Mockito.mock(Project.class),
+                Mockito.mock(Commit.class)
+            )
         );
         puzzles.process("puzzles.xml");
 

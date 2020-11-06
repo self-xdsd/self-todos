@@ -67,6 +67,9 @@ public class PuzzlesApi {
 
     /**
      * Trigger the reading/processing of the puzzles for the given Project.
+     * This endpoint should be called internally by self-pm, which should
+     * forward the "push" event to it.<br><br>
+     *
      * @param provider Provider name (github, gitlab etc).
      * @param owner Owner login (user or organization name).
      * @param name Simple name of the repository.
@@ -119,6 +122,14 @@ public class PuzzlesApi {
                         throw new UnsupportedOperationException(
                             "No Comment in the PUSH Event"
                         );
+                    }
+
+                    @Override
+                    public Commit commit() {
+                        final JsonObject latest = this.event.getJsonArray(
+                            "commits"
+                        ).getJsonObject(0);
+                        return this.project().repo().commits().received(latest);
                     }
 
                     @Override

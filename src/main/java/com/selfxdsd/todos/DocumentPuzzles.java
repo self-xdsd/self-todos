@@ -22,6 +22,7 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Commit;
 import com.selfxdsd.api.Project;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
@@ -57,6 +58,11 @@ public final class DocumentPuzzles implements Puzzles<String> {
     private final Project project;
 
     /**
+     * Commit which triggered everything.
+     */
+    private final Commit commit;
+
+    /**
      * Processed puzzles.
      */
     private final List<Puzzle> puzzles;
@@ -64,9 +70,11 @@ public final class DocumentPuzzles implements Puzzles<String> {
     /**
      * Ctor.
      * @param project Project where these puzzles are coming from.
+     * @param commit Commit which triggered everything.
      */
-    public DocumentPuzzles(final Project project) {
+    public DocumentPuzzles(final Project project, final Commit commit) {
         this.project = project;
+        this.commit = commit;
         this.puzzles = new ArrayList<>();
     }
 
@@ -98,6 +106,23 @@ public final class DocumentPuzzles implements Puzzles<String> {
         } catch (final SAXException
             | IOException
             | ParserConfigurationException exception) {
+            this.commit.comments().post(
+                "@" + this.commit.author() + " There's been a problem while "
+                + "parsing the to-dos in the code. Most likely, the format is "
+                + "not correct. Read more about the to-do format [here]"
+                + "(https://docs.self-xdsd.com/todos.html#grammar). "
+                + "If you can't understand the error, just open an Issue "
+                + "[here](https://github.com/self-xdsd/self-todos).\n\n"
+                + "Parse result:\n\n"
+                + "```\n"
+                + input
+                + "```\n\n"
+                + "Error:\n\n"
+                + "```java\n"
+                + exception.getMessage() + "\n\n"
+                + exception.getStackTrace() + "\n"
+                + "```"
+            );
             throw new PuzzlesProcessingException(exception);
         }
     }

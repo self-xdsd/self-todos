@@ -24,10 +24,8 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.jcabi.ssh.Ssh;
-import com.selfxdsd.api.Event;
-import com.selfxdsd.api.Issue;
-import com.selfxdsd.api.Issues;
-import com.selfxdsd.api.Project;
+import com.selfxdsd.api.*;
+import com.selfxdsd.core.Env;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
@@ -42,11 +40,6 @@ import java.nio.file.Path;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #24:60min Pass on the Event to the puzzle-processing
- *  objects. If there is any problem while processing the puzzles,
- *  we should post a comment on the Commit which triggered the event
- *  and let the author know about the issue. We have to wait for
- *  self-core 0.0.31, which will have the Event.commit() method.
  */
 @Component
 @RequestScope
@@ -56,11 +49,11 @@ public class PuzzlesComponent {
      * SSH Connection.
      */
     private final Shell ssh = new Ssh(
-        System.getenv("self_pdd_host"),
-        Integer.valueOf(System.getenv("self_pdd_port")),
-        System.getenv("self_pdd_username"),
+        System.getenv(Env.PDD_HOST),
+        Integer.valueOf(Env.PDD_PORT),
+        System.getenv(Env.PDD_USERNAME),
         Files.readString(
-            Path.of(System.getenv("self_pdd_privatekey"))
+            Path.of(System.getenv(Env.PDD_PRIVATE_KEY))
         )
     );
 
@@ -83,9 +76,10 @@ public class PuzzlesComponent {
     public void review(final Event event)
         throws PuzzlesProcessingException {
         final Project project = event.project();
+        final Commit commit = event.commit();
         final Puzzles<Project> puzzles = new SshPuzzles(
             this.ssh,
-            new DocumentPuzzles(project)
+            new DocumentPuzzles(project, commit)
         );
         puzzles.process(project);
 
