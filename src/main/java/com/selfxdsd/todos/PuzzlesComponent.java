@@ -105,7 +105,7 @@ public class PuzzlesComponent {
             this.closeRemovedPuzzles(puzzles, issues, commit);
         } catch (final PuzzlesProcessingException ex) {
             LOG.error(
-                "Exception while processing puzzles for Project "
+                "Exception while reviewing puzzles for Project "
                 + project.repoFullName() + " at " + project.provider() + ": ",
                 ex
             );

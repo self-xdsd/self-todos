@@ -25,6 +25,8 @@ package com.selfxdsd.todos;
 import com.jcabi.ssh.Shell;
 import com.selfxdsd.api.Project;
 import org.cactoos.io.DeadInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,6 +51,13 @@ import java.util.UUID;
  *  as PuzzlesProcessingException in SshPuzzles.
  */
 public final class SshPuzzles implements Puzzles<Project> {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(
+        SshPuzzles.class
+    );
 
     /**
      * Next puzzles for processing.
@@ -89,6 +98,11 @@ public final class SshPuzzles implements Puzzles<Project> {
                 + " && cat ./puzzles.xml");
             this.next.process(puzzles);
         } catch (final IOException exception) {
+            LOG.error(
+                "IOException while processing the puzzles for Project "
+                + project.repoFullName() + " at " + project.provider() + ": ",
+                exception
+            );
             throw new PuzzlesProcessingException(exception);
         }
     }
@@ -102,7 +116,6 @@ public final class SshPuzzles implements Puzzles<Project> {
     public String exec(final String cmd) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int exit = this.ssh.exec(cmd, new DeadInput().stream(), baos, baos);
-        System.out.println("EXIT CODE >>>> " + exit);
         return baos.toString(StandardCharsets.UTF_8.toString());
     }
 
