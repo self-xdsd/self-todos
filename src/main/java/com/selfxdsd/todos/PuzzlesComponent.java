@@ -127,7 +127,7 @@ public class PuzzlesComponent {
         for(final Puzzle puzzle : puzzles) {
             boolean foundIssue = false;
             for(final Issue issue : issues) {
-                if(issue.json().getString("body").contains(puzzle.getId())) {
+                if(issue.body().contains(puzzle.getId())) {
                     foundIssue = true;
                     break;
                 }
@@ -165,7 +165,7 @@ public class PuzzlesComponent {
         for(final Issue issue : issues) {
             boolean foundPuzzle = false;
             for(final Puzzle puzzle : puzzles) {
-                if(issue.json().getString("body").contains(puzzle.getId())) {
+                if(issue.body().contains(puzzle.getId())) {
                     foundPuzzle = true;
                     break;
                 }
