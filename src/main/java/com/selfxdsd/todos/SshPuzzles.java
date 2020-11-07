@@ -24,18 +24,19 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.selfxdsd.api.Project;
+import com.selfxdsd.core.projects.English;
 import org.cactoos.io.DeadInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Representation of pdd puzzles from processing a SSH command.
@@ -84,17 +85,18 @@ public final class SshPuzzles implements Puzzles<Project> {
     @Override
     public void process(final Project project)
         throws PuzzlesProcessingException {
+        new English();
         try {
             final String id = UUID.randomUUID().toString().replace("-", "");
             this.exec(
                 String.format(
-                    Files.readString(
-                        Path.of(
+                    new BufferedReader(
+                        new InputStreamReader(
                             this.getClass().getClassLoader()
-                                .getResource("cloneRepoAndPdd.sh")
-                                .toURI()
+                                .getResourceAsStream("cloneRepoAndPdd.sh"),
+                            StandardCharsets.UTF_8
                         )
-                    ),
+                    ).lines().collect(Collectors.joining("\n")),
                     id, id, project.provider(), project.repoFullName()
                 )
             );
@@ -102,7 +104,7 @@ public final class SshPuzzles implements Puzzles<Project> {
                 "cd self-todos-tmp-" + id + "/repo"
                 + " && cat ./puzzles.xml");
             this.next.process(puzzles);
-        } catch (final IOException | URISyntaxException exception) {
+        } catch (final IOException exception) {
             LOG.error(
                 "IOException while processing the puzzles for Project "
                 + project.repoFullName() + " at " + project.provider() + ": ",
