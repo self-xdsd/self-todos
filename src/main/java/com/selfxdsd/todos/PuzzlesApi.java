@@ -129,7 +129,8 @@ public class PuzzlesApi {
                         final JsonObject latest = this.event.getJsonArray(
                             "commits"
                         ).getJsonObject(0);
-                        return this.project().repo().commits().received(latest);
+                        return this.project().repo()
+                            .commits().getCommit(latest.getString("id"));
                     }
 
                     @Override
