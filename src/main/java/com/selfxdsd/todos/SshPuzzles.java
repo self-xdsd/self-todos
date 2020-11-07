@@ -24,12 +24,14 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.selfxdsd.api.Project;
+import com.selfxdsd.core.projects.English;
 import org.cactoos.io.DeadInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -83,12 +85,17 @@ public final class SshPuzzles implements Puzzles<Project> {
     @Override
     public void process(final Project project)
         throws PuzzlesProcessingException {
+        new English();
         try {
             final String id = UUID.randomUUID().toString().replace("-", "");
             this.exec(
                 String.format(
                     Files.readString(
-                        Path.of("src/main/resources/cloneRepoAndPdd.sh")
+                        Path.of(
+                            this.getClass().getClassLoader()
+                                .getResource("cloneRepoAndPdd.sh")
+                                .toURI()
+                        )
                     ),
                     id, id, project.provider(), project.repoFullName()
                 )
@@ -97,7 +104,7 @@ public final class SshPuzzles implements Puzzles<Project> {
                 "cd self-todos-tmp-" + id + "/repo"
                 + " && cat ./puzzles.xml");
             this.next.process(puzzles);
-        } catch (final IOException exception) {
+        } catch (final IOException | URISyntaxException exception) {
             LOG.error(
                 "IOException while processing the puzzles for Project "
                 + project.repoFullName() + " at " + project.provider() + ": ",
