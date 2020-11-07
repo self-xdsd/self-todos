@@ -61,7 +61,7 @@ public class PuzzlesComponent {
      */
     private final Shell ssh = new Ssh(
         System.getenv(Env.PDD_HOST),
-        Integer.valueOf(Env.PDD_PORT),
+        Integer.valueOf(System.getenv(Env.PDD_PORT)),
         System.getenv(Env.PDD_USERNAME),
         Files.readString(
             Path.of(System.getenv(Env.PDD_PRIVATE_KEY))
