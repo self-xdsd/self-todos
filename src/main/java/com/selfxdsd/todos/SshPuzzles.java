@@ -24,6 +24,7 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.selfxdsd.api.Project;
+import com.selfxdsd.api.ProjectManager;
 import org.cactoos.io.DeadInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,7 @@ public final class SshPuzzles implements Puzzles<Project> {
     public void process(final Project project)
         throws PuzzlesProcessingException {
         try {
+            final ProjectManager manager = project.projectManager();
             final String id = UUID.randomUUID().toString().replace("-", "");
             this.exec(
                 String.format(
@@ -95,7 +97,10 @@ public final class SshPuzzles implements Puzzles<Project> {
                             StandardCharsets.UTF_8
                         )
                     ).lines().collect(Collectors.joining("\n")),
-                    id, id, project.provider(), project.repoFullName()
+                    id,
+                    id,
+                    project.provider() + "-" + manager.username(),
+                    project.repoFullName()
                 )
             );
             final String puzzles = this.exec(
