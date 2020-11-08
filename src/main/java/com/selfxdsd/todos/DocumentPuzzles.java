@@ -92,12 +92,9 @@ public final class DocumentPuzzles implements Puzzles<String> {
             SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
                 .newSchema(
-                    new File(
-                        this.getClass()
-                            .getClassLoader()
-                            .getResource("0.20.5.xsd")
-                            .getFile()
-                    )
+                    this.getClass()
+                        .getClassLoader()
+                        .getResource("0.20.5.xsd")
                 ).newValidator()
                 .validate(new DOMSource(document));
             final Element root = document
