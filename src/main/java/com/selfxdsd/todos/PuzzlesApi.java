@@ -129,8 +129,11 @@ public class PuzzlesApi {
                         final JsonObject latest = this.event.getJsonArray(
                             "commits"
                         ).getJsonObject(0);
-                        return this.project().repo()
-                            .commits().getCommit(latest.getString("id"));
+                        final String repoFullName = project.repoFullName();
+                        return project.projectManager().provider().repo(
+                            repoFullName.split("/")[0],
+                            repoFullName.split("/")[1]
+                        ).commits().getCommit(latest.getString("id"));
                     }
 
                     @Override
