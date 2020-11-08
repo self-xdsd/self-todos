@@ -12,3 +12,6 @@ Hint:
 
 The library we use will throw an exception because it only supports RSA keys. To fix the problem, follow this article:
 https://mkyong.com/java/jsch-invalid-privatekey-exception/
+
+
+PM SSH Access to Github https://gist.github.com/oanhnn/80a89405ab9023894df7
