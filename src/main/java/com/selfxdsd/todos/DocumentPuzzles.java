@@ -24,7 +24,6 @@ package com.selfxdsd.todos;
 
 import com.selfxdsd.api.Commit;
 import com.selfxdsd.api.Project;
-import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,8 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.SchemaFactory;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -93,8 +91,14 @@ public final class DocumentPuzzles implements Puzzles<String> {
                 .parse(new InputSource(new StringReader(input)));
             SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                .newSchema(new ClassPathResource("0.20.5.xsd").getFile())
-                .newValidator()
+                .newSchema(
+                    new File(
+                        this.getClass()
+                            .getClassLoader()
+                            .getResource("0.20.5.xsd")
+                            .getFile()
+                    )
+                ).newValidator()
                 .validate(new DOMSource(document));
             final Element root = document
                 .getDocumentElement();
@@ -106,6 +110,8 @@ public final class DocumentPuzzles implements Puzzles<String> {
         } catch (final SAXException
             | IOException
             | ParserConfigurationException exception) {
+            final StringWriter stacktrace = new StringWriter();
+            exception.printStackTrace(new PrintWriter(stacktrace));
             this.commit.comments().post(
                 "@" + this.commit.author() + " There's been a problem while "
                 + "parsing the to-dos in the code. Most likely, the format is "
@@ -120,7 +126,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
                 + "Error:\n\n"
                 + "```java\n"
                 + exception.getMessage() + "\n\n"
-                + exception.getStackTrace() + "\n"
+                + stacktrace.toString() + "\n"
                 + "```"
             );
             throw new PuzzlesProcessingException(exception);
