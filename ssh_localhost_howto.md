@@ -5,6 +5,9 @@ https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-
 
 I suggest choosing a different name than ``id_rsa``. You can leave the passphrase empty.
 
+Add private key to ssh-agent.
+Add public key to file ~/.ssh/authorized_keys: echo $(cat self_todos_rsa4.pub) >> authorized_keys
+
 Hint:
 
 The library we use will throw an exception because it only supports RSA keys. To fix the problem, follow this article:
