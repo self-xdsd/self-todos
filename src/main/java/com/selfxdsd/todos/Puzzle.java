@@ -22,15 +22,13 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.Commit;
 import com.selfxdsd.api.Project;
 import com.selfxdsd.api.Provider;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 /**
@@ -133,6 +131,11 @@ public interface Puzzle {
         private Project project;
 
         /**
+         * Commit which triggered the puzzle discovery.
+         */
+        private Commit commit;
+
+        /**
          * Unique ID of the puzzle.
          */
         private String id;
@@ -193,6 +196,16 @@ public interface Puzzle {
          */
         public Builder setProject(final Project project) {
             this.project = project;
+            return this;
+        }
+
+        /**
+         * Sets the Commit.
+         * @param commit Commit.
+         * @return Builder.
+         */
+        public Builder setCommit(final Commit commit) {
+            this.commit = commit;
             return this;
         }
 
@@ -412,13 +425,10 @@ public interface Puzzle {
                     final String provider = project.provider();
                     final String body;
                     if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
-                        body = "\"\n" + this.getBody() + "\n\"\n\n"
-                            + "It is is located at "
-                            + "[" + this.getFile() + "#" + this.getLines()
-                            + "](" + "https://github.com/"
-                            + project.repoFullName()
-                            + "/blob/master/" + this.getFile()
-                            + "#" + this.getLines() + ").";
+                        body = "https://github.com/" + project.repoFullName()
+                            + "/blob/" + commit.shaRef() + "/" + this.getFile()
+                            + "#" + this.getLines() + "\n\n"
+                            + "\"" + this.getBody() + "\".";
                     } else {
                         body = "\"" + this.getBody() + "\"\n\n"
                             + "It is located at " + this.getFile()

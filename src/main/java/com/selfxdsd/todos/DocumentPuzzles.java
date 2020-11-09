@@ -152,6 +152,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
         private PuzzleElement(final Element element){
             this.delegate = new Puzzle.Builder()
                 .setProject(DocumentPuzzles.this.project)
+                .setCommit(DocumentPuzzles.this.commit)
                 .setId(this.textContext(element, "id"))
                 .setTicket(Integer
                     .parseInt(this.textContext(element, "ticket")))
