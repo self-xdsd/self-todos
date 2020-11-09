@@ -25,9 +25,13 @@ package com.selfxdsd.todos;
 import com.selfxdsd.api.Project;
 import com.selfxdsd.api.Provider;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 /**
  * Representation of a pdd puzzle.
@@ -420,21 +424,21 @@ public interface Puzzle {
                             + "It is located at " + this.getFile()
                             + "#" + this.getLines() + ". ";
                     }
-                    try {
-                        issueBody = String.format(
-                            Files.readString(
-                                Path.of("src/main/resources/issueBody.txt")
-                            ),
-                            this.getId(),
-                            "#" + this.getTicket(),
-                            body,
-                            this.getAuthor(),
-                            this.getTime(),
-                            this.getEstimate()
-                        );
-                    } catch (final IOException ex) {
-                        issueBody = this.getBody();
-                    }
+                    issueBody = String.format(
+                        new BufferedReader(
+                            new InputStreamReader(
+                                this.getClass().getClassLoader()
+                                    .getResourceAsStream("issueBody.txt"),
+                                StandardCharsets.UTF_8
+                            )
+                        ).lines().collect(Collectors.joining("\n")),
+                        this.getId(),
+                        "#" + this.getTicket(),
+                        body,
+                        this.getAuthor(),
+                        this.getTime(),
+                        this.getEstimate()
+                    );
                     return issueBody;
                 }
 
