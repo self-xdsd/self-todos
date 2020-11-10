@@ -27,6 +27,8 @@ import com.selfxdsd.core.Env;
 import com.selfxdsd.core.SelfCore;
 import com.selfxdsd.storage.MySql;
 import com.selfxdsd.storage.SelfJooq;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,6 +39,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public final class SelfCoreComponent implements Self {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(
+        SelfCoreComponent.class
+    );
+
 
     /**
      * Self's core.
@@ -73,6 +83,8 @@ public final class SelfCoreComponent implements Self {
 
     @Override
     public void close() throws Exception {
+        LOG.warn("CLOSING SELF CORE...");
         this.core.close();
+        LOG.warn("SELF CORE SUCCESSFULLY CLOSED!");
     }
 }
