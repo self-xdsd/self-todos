@@ -30,6 +30,7 @@ import com.selfxdsd.storage.SelfJooq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Self Core component.
@@ -38,7 +39,8 @@ import org.springframework.stereotype.Component;
  * @since 0.0.4
  */
 @Component
-public final class SelfCoreComponent implements Self {
+@RequestScope
+public class SelfCoreComponent implements Self {
 
     /**
      * Logger.
