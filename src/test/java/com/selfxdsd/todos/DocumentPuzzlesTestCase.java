@@ -1,7 +1,6 @@
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.Commit;
-import com.selfxdsd.api.Project;
+import com.selfxdsd.api.*;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,7 @@ import org.mockito.Mockito;
  * @author criske
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle ExecutableStatementCount (500 lines)
  */
 public final class DocumentPuzzlesTestCase {
 
@@ -21,9 +21,17 @@ public final class DocumentPuzzlesTestCase {
      */
     @Test
     public void canParsePuzzlesFromXml() throws PuzzlesProcessingException {
+        final Commits commits = Mockito.mock(Commits.class);
+        Mockito.when(commits.latest()).thenReturn(Mockito.mock(Commit.class));
+        final Repo repo = Mockito.mock(Repo.class);
+        Mockito.when(repo.commits()).thenReturn(commits);
+        final Project project = Mockito.mock(Project.class);
+        Mockito.when(project.repo()).thenReturn(repo);
+
+
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new DocumentPuzzles(
-                Mockito.mock(Project.class),
+                project,
                 Mockito.mock(Commit.class)
             )
         );
