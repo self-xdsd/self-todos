@@ -100,9 +100,10 @@ public final class DocumentPuzzles implements Puzzles<String> {
             final Element root = document
                 .getDocumentElement();
             final NodeList puzzleTags = root.getElementsByTagName("puzzle");
+            final Commit latest = this.project.repo().commits().latest();
             for (int i = 0; i < puzzleTags.getLength(); i++) {
                 final Node node = puzzleTags.item(i);
-                puzzles.add(new PuzzleElement((Element) node));
+                puzzles.add(new PuzzleElement((Element) node, latest));
             }
         } catch (final SAXException
             | IOException
@@ -148,11 +149,12 @@ public final class DocumentPuzzles implements Puzzles<String> {
         /**
          * Ctor.
          * @param element DOM Element.
+         * @param latest Latest commit from the repo.
          */
-        private PuzzleElement(final Element element){
+        private PuzzleElement(final Element element, final Commit latest){
             this.delegate = new Puzzle.Builder()
                 .setProject(DocumentPuzzles.this.project)
-                .setCommit(DocumentPuzzles.this.commit)
+                .setCommit(latest)
                 .setId(this.textContext(element, "id"))
                 .setTicket(Integer
                     .parseInt(this.textContext(element, "ticket")))

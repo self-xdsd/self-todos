@@ -131,9 +131,9 @@ public interface Puzzle {
         private Project project;
 
         /**
-         * Commit which triggered the puzzle discovery.
+         * Latest commit in the Repo.
          */
-        private Commit commit;
+        private Commit latest;
 
         /**
          * Unique ID of the puzzle.
@@ -205,7 +205,7 @@ public interface Puzzle {
          * @return Builder.
          */
         public Builder setCommit(final Commit commit) {
-            this.commit = commit;
+            this.latest = commit;
             return this;
         }
 
@@ -426,7 +426,7 @@ public interface Puzzle {
                     final String body;
                     if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
                         body = "https://github.com/" + project.repoFullName()
-                            + "/blob/" + commit.shaRef() + "/" + this.getFile()
+                            + "/blob/" + latest.shaRef() + "/" + this.getFile()
                             + "#" + this.getLines() + "\n\n"
                             + "\"" + this.getBody() + "\".";
                     } else {
