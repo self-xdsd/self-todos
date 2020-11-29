@@ -100,7 +100,7 @@ public class PuzzlesComponent {
                 .provider()
                 .repo(owner, name)
                 .issues()
-                .search("", Puzzle.LABEL);
+                .search("", Puzzle.PUZZLE_LABEL);
             this.openNewTickets(puzzles, issues, commit);
             this.closeRemovedPuzzles(puzzles, issues, commit);
         } catch (final PuzzlesProcessingException ex) {
@@ -136,7 +136,11 @@ public class PuzzlesComponent {
                 final Issue newIssue = issues.open(
                     puzzle.issueTitle(),
                     puzzle.issueBody(),
-                    Puzzle.LABEL
+                    Puzzle.PUZZLE_LABEL,
+                    String.format(
+                        Puzzle.ESTIMATION_LABEL,
+                        puzzle.getEstimate()
+                    )
                 );
                 opened.add("#" + newIssue.issueId());
             }
