@@ -45,7 +45,12 @@ public interface Puzzle {
     /**
      * Label which should be present on the Puzzle issues.
      */
-    String LABEL = "puzzle";
+    String PUZZLE_LABEL = "puzzle";
+
+    /**
+     * Estimation label format.
+     */
+    String ESTIMATION_LABEL = "%s min";
 
     /**
      * Unique ID of the puzzle.
