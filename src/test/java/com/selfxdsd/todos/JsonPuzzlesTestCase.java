@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
- * Unit tests for {@link XmlPuzzles}.
+ * Unit tests for {@link JsonPuzzles}.
  * @author criske
  * @version $Id$
  * @since 0.0.2
