@@ -29,10 +29,11 @@ import com.selfxdsd.api.Provider;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
- * Representation of a pdd puzzle.
+ * Representation of a puzzle.
  * @author criske
  * @version $Id$
  * @since 0.0.1
@@ -84,10 +85,16 @@ public interface Puzzle {
     String getFile();
 
     /**
-     * Lines is where the puzzle is found, inside the file.
-     * @return String.
+     * Lines is where the puzzle starts, inside the file.
+     * @return Integer.
      */
-    String getLines();
+    int getStart();
+
+    /**
+     * Lines is where the puzzle ends, inside the file.
+     * @return Integer.
+     */
+    int getEnd();
 
     /**
      * The role that is allowed to solve the puzzle.
@@ -169,10 +176,14 @@ public interface Puzzle {
 
 
         /**
-         * Lines is where the puzzle is found, inside the file.
+         * Lines is where the puzzle starts, inside the file.
          */
-        private String lines;
+        private int start;
 
+        /**
+         * Lines is where the puzzle ends, inside the file.
+         */
+        private int end;
 
         /**
          * The role that is allowed to solve the puzzle.
@@ -265,12 +276,22 @@ public interface Puzzle {
         }
 
         /**
-         * Sets the lines.
-         * @param lines Lines.
+         * Sets the puzzle start.
+         * @param start Start line.
          * @return Builder.
          */
-        public Builder setLines(final String lines) {
-            this.lines = lines;
+        public Builder setStart(final int start) {
+            this.start = start;
+            return this;
+        }
+
+        /**
+         * Sets the puzzle end.
+         * @param end End line.
+         * @return Builder.
+         */
+        public Builder setEnd(final int end) {
+            this.end = end;
             return this;
         }
 
@@ -321,6 +342,7 @@ public interface Puzzle {
          * @checkstyle CyclomaticComplexity (100 lines).
          * @checkstyle NPathComplexity (100 lines).
          * @checkstyle JavaNCSS (100 lines).
+         * @checkstyle ExecutableStatementCount (100 lines)
          */
         public Puzzle build() {
             if (this.project == null) {
@@ -341,8 +363,11 @@ public interface Puzzle {
             if (this.file == null) {
                 throw new IllegalStateException("File is missing");
             }
-            if (this.lines == null) {
-                throw new IllegalStateException("Lines is missing");
+            if (this.start == 0) {
+                throw new IllegalStateException("Start line is missing");
+            }
+            if (this.end == 0) {
+                throw new IllegalStateException("End line is missing");
             }
             if (this.role == null) {
                 throw new IllegalStateException("Role is missing");
@@ -356,6 +381,18 @@ public interface Puzzle {
             if (this.time == null) {
                 throw new IllegalStateException("Time is missing");
             }
+
+            final String id = this.id;
+            final int ticket = this.ticket;
+            final String body = this.body;
+            final int estimate = this.estimate;
+            final String file = this.file;
+            final int start = this.start;
+            final int end = this.end;
+            final String role = this.role;
+            final String author = this.author;
+            final String email = this.email;
+            final String time = this.time;
 
             return new Puzzle() {
                 @Override
@@ -384,9 +421,13 @@ public interface Puzzle {
                 }
 
                 @Override
-                public String getLines() {
-                    final String[] numbers = lines.split("-");
-                    return "L" + numbers[0] + "-L" + numbers[1];
+                public int getStart() {
+                    return start;
+                }
+
+                @Override
+                public int getEnd() {
+                    return end;
                 }
 
                 @Override
@@ -411,8 +452,10 @@ public interface Puzzle {
 
                 @Override
                 public String issueTitle() {
-                    final String[] path = this.getFile().split("/");
-                    final String fileName = path[path.length - 1];
+                    final String fileName = Paths
+                        .get(this.getFile())
+                        .getFileName()
+                        .toString();
                     final String body = this.getBody();
                     final String bodySnippet;
                     if(body.length() < 30) {
@@ -432,12 +475,12 @@ public interface Puzzle {
                     if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
                         body = "https://github.com/" + project.repoFullName()
                             + "/blob/" + latest.shaRef() + "/" + this.getFile()
-                            + "#" + this.getLines() + "\n\n"
+                            + "#" + this.getStart()+"-" + this.getEnd() + "\n\n"
                             + "\"" + this.getBody() + "\".";
                     } else {
                         body = "\"" + this.getBody() + "\"\n\n"
                             + "It is located at " + this.getFile()
-                            + "#" + this.getLines() + ". ";
+                            + "#" + this.getStart()+"-" + this.getEnd() + ". ";
                     }
                     issueBody = String.format(
                         new BufferedReader(
@@ -465,7 +508,8 @@ public interface Puzzle {
                         + ", body='" + body + '\''
                         + ", estimate=" + estimate
                         + ", file='" + file + '\''
-                        + ", lines='" + lines + '\''
+                        + ", start='" + start + '\''
+                        + ", end='" + end + '\''
                         + ", role='" + role + '\''
                         + ", author='" + author + '\''
                         + ", email='" + email + '\''
@@ -475,6 +519,7 @@ public interface Puzzle {
 
             };
         }
+
     }
 
 }

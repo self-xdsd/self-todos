@@ -46,9 +46,9 @@ import java.util.List;
  * of a String input.
  * @author criske
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.2
  */
-public final class DocumentPuzzles implements Puzzles<String> {
+public final class XmlPuzzles implements Puzzles<String> {
 
     /**
      * Project where these puzzles are coming from.
@@ -70,7 +70,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
      * @param project Project where these puzzles are coming from.
      * @param commit Commit which triggered everything.
      */
-    public DocumentPuzzles(final Project project, final Commit commit) {
+    public XmlPuzzles(final Project project, final Commit commit) {
         this.project = project;
         this.commit = commit;
         this.puzzles = new ArrayList<>();
@@ -153,7 +153,7 @@ public final class DocumentPuzzles implements Puzzles<String> {
          */
         private PuzzleElement(final Element element, final Commit latest){
             this.delegate = new Puzzle.Builder()
-                .setProject(DocumentPuzzles.this.project)
+                .setProject(XmlPuzzles.this.project)
                 .setCommit(latest)
                 .setId(this.textContext(element, "id"))
                 .setTicket(Integer
@@ -162,7 +162,12 @@ public final class DocumentPuzzles implements Puzzles<String> {
                 .setEstimate(Integer
                     .parseInt(this.textContext(element, "estimate")))
                 .setFile(this.textContext(element, "file"))
-                .setLines(this.textContext(element, "lines"))
+                .setStart(Integer.parseInt(this
+                    .textContext(element, "lines")
+                    .split("-")[0]))
+                .setEnd(Integer.parseInt(this
+                    .textContext(element, "lines")
+                    .split("-")[1]))
                 .setRole(this.textContext(element, "role"))
                 .setAuthor(this.textContext(element, "author"))
                 .setEmail(this.textContext(element, "email"))
@@ -196,8 +201,13 @@ public final class DocumentPuzzles implements Puzzles<String> {
         }
 
         @Override
-        public String getLines() {
-            return delegate.getLines();
+        public int getStart() {
+            return delegate.getStart();
+        }
+
+        @Override
+        public int getEnd() {
+            return delegate.getEnd();
         }
 
         @Override

@@ -88,7 +88,10 @@ public class PuzzlesComponent {
         final Commit commit = event.commit();
         final Puzzles<Project> puzzles = new SshPuzzles(
             this.ssh,
-            new DocumentPuzzles(project, commit)
+            new PuzzlesWithFallback<>(
+                new JsonPuzzles(project, commit),
+                new XmlPuzzles(project, commit)
+            )
         );
         try {
             puzzles.process(project);

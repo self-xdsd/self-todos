@@ -1,26 +1,29 @@
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.*;
+import com.selfxdsd.api.Commit;
+import com.selfxdsd.api.Commits;
+import com.selfxdsd.api.Project;
+import com.selfxdsd.api.Repo;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
- * Unit tests for {@link DocumentPuzzles}.
+ * Unit tests for {@link XmlPuzzles}.
  * @author criske
  * @version $Id$
- * @since 0.0.1
- * @checkstyle ExecutableStatementCount (500 lines)
+ * @since 0.0.2
  */
-public final class DocumentPuzzlesTestCase {
+public final class JsonPuzzlesTestCase {
 
     /**
-     * DocumentPuzzles can process Puzzles from xml string.
+     * JsonPuzzles can process Puzzles from xml string.
      * @throws PuzzlesProcessingException Something went wrong.
+     * @checkstyle ExecutableStatementCount (100 lines).
      */
     @Test
-    public void canParsePuzzlesFromXml() throws PuzzlesProcessingException {
+    public void canParsePuzzlesFromJson() throws PuzzlesProcessingException {
         final Commits commits = Mockito.mock(Commits.class);
         Mockito.when(commits.latest()).thenReturn(Mockito.mock(Commit.class));
         final Repo repo = Mockito.mock(Repo.class);
@@ -28,42 +31,44 @@ public final class DocumentPuzzlesTestCase {
         final Project project = Mockito.mock(Project.class);
         Mockito.when(project.repo()).thenReturn(repo);
 
-
         final Puzzles<String> puzzles = new ResourcesPuzzles(
-            new DocumentPuzzles(
+            new XmlPuzzles(
                 project,
                 Mockito.mock(Commit.class)
             )
         );
-        puzzles.process("puzzles.xml");
+        puzzles.process("puzzles.json");
 
-        MatcherAssert.assertThat(puzzles, Matchers.iterableWithSize(1));
+        MatcherAssert.assertThat(puzzles, Matchers.iterableWithSize(2));
         final Puzzle puzzle = puzzles.iterator().next();
         MatcherAssert.assertThat(puzzle.getId(),
-            Matchers.equalTo("516-ffc97ad1"));
+            Matchers.equalTo("1194770182"));
         MatcherAssert.assertThat(puzzle.getTicket(),
-            Matchers.equalTo(516));
+            Matchers.equalTo(153));
         MatcherAssert.assertThat(puzzle.getEstimate(),
-            Matchers.equalTo(15));
+            Matchers.equalTo(30));
         MatcherAssert.assertThat(puzzle.getRole(),
             Matchers.equalTo("DEV"));
-        MatcherAssert.assertThat(puzzle.getLines(),
-            Matchers.equalTo("L61-L63"));
+        MatcherAssert.assertThat(puzzle.getStart(),
+            Matchers.equalTo(42));
+        MatcherAssert.assertThat(puzzle.getEnd(),
+            Matchers.equalTo(42));
         MatcherAssert.assertThat(puzzle.getBody(),
-            Matchers.equalTo("This has to be fixed later..."));
+            Matchers.equalTo("Add integration tests for filters."));
         MatcherAssert.assertThat(puzzle.getFile(),
-            Matchers.equalTo("src/test/java/org/takes/SomeTest.java"));
+            Matchers.equalTo(".\\RtImagesITCase.java"));
         MatcherAssert.assertThat(puzzle.getAuthor(),
-            Matchers.equalTo("Yegor Bugayenko"));
+            Matchers.equalTo(""));
         MatcherAssert.assertThat(puzzle.getEmail(),
-            Matchers.equalTo("yegor256@gmail.com"));
+            Matchers.equalTo(""));
         MatcherAssert.assertThat(puzzle.getTime(),
-            Matchers.equalTo("2018-01-01T21:09:03Z"));
+            Matchers.equalTo(""));
         MatcherAssert.assertThat(puzzle.issueTitle(),
-            Matchers.equalTo("SomeTest.java: This has to be fixed later..."));
+            Matchers.equalTo(
+                "RtImagesITCase.java: Add integration tests for fil... "
+            )
+        );
         System.out.println(puzzle.issueBody());
     }
 
 }
-
-
