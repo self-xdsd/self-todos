@@ -32,7 +32,7 @@ public final class JsonPuzzlesTestCase {
         Mockito.when(project.repo()).thenReturn(repo);
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
-            new XmlPuzzles(
+            new JsonPuzzles(
                 project,
                 Mockito.mock(Commit.class)
             )
