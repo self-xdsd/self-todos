@@ -452,10 +452,10 @@ public interface Puzzle {
 
                 @Override
                 public String issueTitle() {
-                    final String fileName = Paths
-                        .get(this.getFile())
-                        .getFileName()
-                        .toString();
+                    final String[] path = this.getFile()
+                        .replace("\\","/")
+                        .split("/");
+                    final String fileName = path[path.length - 1];
                     final String body = this.getBody();
                     final String bodySnippet;
                     if(body.length() < 30) {
