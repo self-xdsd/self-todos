@@ -40,6 +40,7 @@ import java.util.List;
  * @author criske
  * @version $Id$
  * @since 0.0.2
+ * @checkstyle LineLength (300 lines)
  */
 public final class JsonPuzzles implements Puzzles<String> {
 
@@ -105,7 +106,7 @@ public final class JsonPuzzles implements Puzzles<String> {
                     + " There's been a problem while "
                     + "parsing the to-dos in the code. Most likely, the format "
                     + "is not correct. Read more about the to-do format [here]"
-                    + "(https://docs.self-xdsd.com/todos.html#grammar). "
+                    + "(https://docs.self-xdsd.com/microtasking.html#anatomy-of-a-todo). "
                     + "If you can't understand the error, just open an Issue "
                     + "[here](https://github.com/self-xdsd/self-todos).\n\n"
                     + "Parse result:\n\n"
