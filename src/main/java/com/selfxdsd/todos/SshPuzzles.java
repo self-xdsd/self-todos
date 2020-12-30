@@ -105,7 +105,7 @@ public final class SshPuzzles implements Puzzles<Project> {
             );
             final String puzzles = this.exec(
                 "cd self-todos-tmp-" + id + "/repo"
-                + " && cat ./puzzles.xml");
+                + " && cat ./todos.json");
             this.next.process(puzzles);
         } catch (final IOException exception) {
             LOG.error(
