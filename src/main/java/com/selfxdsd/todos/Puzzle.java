@@ -492,8 +492,6 @@ public interface Puzzle {
                         this.getId(),
                         "#" + this.getTicket(),
                         body,
-                        this.getAuthor(),
-                        this.getTime(),
                         this.getEstimate()
                     );
                     return issueBody;
