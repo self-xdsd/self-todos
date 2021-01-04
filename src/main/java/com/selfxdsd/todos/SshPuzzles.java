@@ -45,12 +45,6 @@ import java.util.stream.Collectors;
  * @since 0.0.1
  * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
  *  for cases when there are invalid documents.
- * @todo #12:30min. Handle SshPuzzles errors output with
- *  PuzzlesProcessingException. Right now there is one single String output.
- *  Instead of a String we should have 2 streams one for puzzles and
- *  one for errors. The puzzle InputStream will processed by DocumentPuzzles
- *  and the error stream will be collected into a error message and thrown
- *  as PuzzlesProcessingException in SshPuzzles.
  */
 public final class SshPuzzles implements Puzzles<Project> {
 
@@ -107,9 +101,10 @@ public final class SshPuzzles implements Puzzles<Project> {
                 "cd self-todos-tmp-" + id + "/repo"
                 + " && cat ./todos.json");
             this.next.process(puzzles);
-        } catch (final IOException exception) {
+        } catch (final IOException | IllegalStateException exception) {
             LOG.error(
-                "IOException while processing the puzzles for Project "
+                exception.getClass().getSimpleName()
+                + " while processing the puzzles for Project "
                 + project.repoFullName() + " at " + project.provider() + ": ",
                 exception
             );
@@ -124,9 +119,23 @@ public final class SshPuzzles implements Puzzles<Project> {
      * @throws IOException If fails
      */
     public String exec(final String cmd) throws IOException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int exit = this.ssh.exec(cmd, new DeadInput().stream(), baos, baos);
-        return baos.toString(StandardCharsets.UTF_8.toString());
+        final ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        final ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+        int exit = this.ssh.exec(
+            cmd,
+            new DeadInput().stream(),
+            stdout,
+            stderr
+        );
+        if (exit != 0) {
+            throw new IllegalStateException(String.format(
+                "%s exits with non-zero code %d\nOutput: %s",
+                cmd,
+                exit,
+                stderr.toString()
+            ));
+        }
+        return stdout.toString(StandardCharsets.UTF_8.toString());
     }
 
     @Override
