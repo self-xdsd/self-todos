@@ -1,6 +1,8 @@
 package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -24,5 +26,21 @@ public final class SshPuzzlesTestCase {
             new Shell.Fake(-1, "output", "error"),
             Mockito.mock(Puzzles.class)
         ).exec("bad cmd");
+    }
+
+    /**
+     * SshPuzzles.exec(cmd) can return the output of executed command.
+     * @throws IOException if something went wrong.
+     */
+    @Test
+    public void execReturnsCmdOutput() throws IOException {
+        MatcherAssert.assertThat(
+            new SshPuzzles(
+                new Shell.Fake(0, "output", "error"),
+                Mockito.mock(Puzzles.class)
+            ).exec("cmd"),
+            Matchers.equalTo("output")
+        );
+
     }
 }
