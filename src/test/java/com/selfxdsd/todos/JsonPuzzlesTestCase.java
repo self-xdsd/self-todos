@@ -1,12 +1,9 @@
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.Commit;
-import com.selfxdsd.api.Commits;
-import com.selfxdsd.api.Project;
-import com.selfxdsd.api.Repo;
+import com.selfxdsd.api.*;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
@@ -71,4 +68,22 @@ public final class JsonPuzzlesTestCase {
         System.out.println(puzzle.issueBody());
     }
 
+    /**
+     * JsonPuzzles can fail when processing invalid json.
+     *
+     * @throws PuzzlesProcessingException if something went wrong.
+     */
+    @Test(expected = PuzzlesProcessingException.class)
+    public void failToParseInvalidJson() throws PuzzlesProcessingException {
+        Commit commit = Mockito.mock(Commit.class);
+        Comments comments = Mockito.mock(Comments.class);
+        Mockito.when(commit.comments()).thenReturn(comments);
+        Comment comment = Mockito.mock(Comment.class);
+        Mockito.when(comments.post(Mockito.anyString())).thenReturn(comment);
+        new JsonPuzzles(
+            Mockito.mock(Project.class),
+            commit
+        ).process("invalid json");
+        Mockito.verify(comments, Mockito.times(1)).post(Mockito.anyString());
+    }
 }
