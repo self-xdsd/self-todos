@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
- *  for cases when there are invalid documents.
  * @todo #12:30min. Handle SshPuzzles errors output with
  *  PuzzlesProcessingException. Right now there is one single String output.
  *  Instead of a String we should have 2 streams one for puzzles and
