@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
  * @author criske
  * @version $Id$
  * @since 0.0.1
- * @todo #7:30min Write unit test for SshPuzzles and unit DocumentPuzzles
- *  for cases when there are invalid documents.
  */
 public final class SshPuzzles implements Puzzles<Project> {
 
