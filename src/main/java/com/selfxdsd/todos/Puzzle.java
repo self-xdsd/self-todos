@@ -474,7 +474,7 @@ public interface Puzzle {
                     if(Provider.Names.GITHUB.equalsIgnoreCase(provider)) {
                         body = "https://github.com/" + project.repoFullName()
                             + "/blob/" + latest.shaRef() + "/" + this.getFile()
-                            + "#" + this.getStart()+"-" + this.getEnd() + "\n\n"
+                            + "#L" + this.getStart()+"-L" + this.getEnd() + "\n\n"
                             + "\"" + this.getBody() + "\".";
                     } else {
                         body = "\"" + this.getBody() + "\"\n\n"
