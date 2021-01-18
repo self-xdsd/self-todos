@@ -146,8 +146,14 @@ public class PuzzlesComponent {
             }
         }
         if(opened.size() > 0) {
+            String author = commit.author();
+            if(author != null && !author.isEmpty()) {
+                author = "@" + author + " ";
+            } else {
+                author = "";
+            }
             commit.comments().post(
-                "@" + commit.author() + " I've opened the Issues "
+                author + "I've opened the Issues "
                 + opened + " for the newly added to-dos.\n\n"
                 + "The to-dos may have been added in an earlier commit, "
                 + "but I've found them just now."
@@ -186,8 +192,14 @@ public class PuzzlesComponent {
             }
         }
         if(closed.size() > 0) {
+            String author = commit.author();
+            if(author != null && !author.isEmpty()) {
+                author = "@" + author + " ";
+            } else {
+                author = "";
+            }
             commit.comments().post(
-                "@" + commit.author() + " I've closed the Issues "
+                author + "I've closed the Issues "
                 + closed + " since their to-dos disappeared from the code.\n\n"
                 + "The to-dos may have been removed in an earlier commit, but "
                 + "I've found it just now."
