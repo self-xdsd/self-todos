@@ -48,6 +48,7 @@ import java.util.List;
  * @version $Id$
  * @since 0.0.2
  * @checkstyle LineLength (300 lines)
+ * @checkstyle ExecutableStatementCount (300 lines)
  */
 public final class XmlPuzzles implements Puzzles<String> {
 
@@ -111,8 +112,14 @@ public final class XmlPuzzles implements Puzzles<String> {
             | ParserConfigurationException exception) {
             final StringWriter stacktrace = new StringWriter();
             exception.printStackTrace(new PrintWriter(stacktrace));
+            String author = this.commit.author();
+            if(author != null && !author.isEmpty()) {
+                author = "@" + author + " ";
+            } else {
+                author = "";
+            }
             this.commit.comments().post(
-                "@" + this.commit.author() + " There's been a problem while "
+                author + "There's been a problem while "
                 + "parsing the to-dos in the code. Most likely, the format is "
                 + "not correct. Read more about the to-do format [here]"
                 + "(https://docs.self-xdsd.com/microtasking.html#anatomy-of-a-todo). "
