@@ -78,8 +78,8 @@ public final class SshPuzzles implements Puzzles<Project> {
     public void process(final Project project)
         throws PuzzlesProcessingException {
         try {
-            final ProjectManager manager = project.projectManager();
             final String id = UUID.randomUUID().toString().replace("-", "");
+            final String repoName = project.repoFullName().split("/")[1];
             this.exec(
                 String.format(
                     new BufferedReader(
@@ -91,12 +91,13 @@ public final class SshPuzzles implements Puzzles<Project> {
                     ).lines().collect(Collectors.joining("\n")),
                     id,
                     id,
-                    project.provider() + "-" + manager.username(),
-                    project.repoFullName()
+                    project.provider(),
+                    project.repoFullName(),
+                    repoName
                 )
             );
             final String puzzles = this.exec(
-                "cd self-todos-tmp-" + id + "/repo"
+                "cd self-todos-tmp-" + id + "/"+ repoName
                 + " && cat ./todos.json");
             this.next.process(puzzles);
         } catch (final IOException | IllegalStateException exception) {
