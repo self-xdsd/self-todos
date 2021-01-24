@@ -28,10 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import java.io.StringReader;
-
 /**
  * Puzzles REST Controller.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -96,52 +92,15 @@ public class PuzzlesApi {
         if (project == null) {
             resp = ResponseEntity.badRequest().build();
         } else {
-            this.puzzlesComponent.review(
-                new Event() {
-                    /**
-                     * Event payload.
-                     */
-                    private final JsonObject event = Json.createReader(
-                        new StringReader(payload)
-                    ).readObject();
-
-                    @Override
-                    public String type() {
-                        return "push";
-                    }
-
-                    @Override
-                    public Issue issue() {
-                        throw new UnsupportedOperationException(
-                            "No Issue in the PUSH Event"
-                        );
-                    }
-
-                    @Override
-                    public Comment comment() {
-                        throw new UnsupportedOperationException(
-                            "No Comment in the PUSH Event"
-                        );
-                    }
-
-                    @Override
-                    public Commit commit() {
-                        final JsonObject latest = this.event.getJsonArray(
-                            "commits"
-                        ).getJsonObject(0);
-                        final String repoFullName = project.repoFullName();
-                        return project.projectManager().provider().repo(
-                            repoFullName.split("/")[0],
-                            repoFullName.split("/")[1]
-                        ).commits().getCommit(latest.getString("id"));
-                    }
-
-                    @Override
-                    public Project project() {
-                        return project;
-                    }
-                }
-            );
+            if(provider.equalsIgnoreCase(Provider.Names.GITHUB)) {
+                this.puzzlesComponent.review(
+                    new GithubWebhookEvent(project, payload)
+                );
+            } else if(provider.equalsIgnoreCase(Provider.Names.GITLAB)) {
+                this.puzzlesComponent.review(
+                    new GitlabWebhookEvent(project, payload)
+                );
+            }
             resp = ResponseEntity.ok().build();
         }
         return resp;
