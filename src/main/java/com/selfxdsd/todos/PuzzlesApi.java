@@ -96,6 +96,10 @@ public class PuzzlesApi {
                 this.puzzlesComponent.review(
                     new GithubWebhookEvent(project, payload)
                 );
+            } else if(provider.equalsIgnoreCase(Provider.Names.GITLAB)) {
+                this.puzzlesComponent.review(
+                    new GitlabWebhookEvent(project, payload)
+                );
             }
             resp = ResponseEntity.ok().build();
         }

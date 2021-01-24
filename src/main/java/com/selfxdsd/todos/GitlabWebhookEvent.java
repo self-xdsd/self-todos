@@ -29,12 +29,12 @@ import javax.json.JsonObject;
 import java.io.StringReader;
 
 /**
- * Github PUSH Event.
+ * GitLab Push Hook Event.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class GithubWebhookEvent implements Event  {
+public final class GitlabWebhookEvent implements Event {
 
     /**
      * Event in JSON.
@@ -51,7 +51,7 @@ public final class GithubWebhookEvent implements Event  {
      * @param project Project where the event happened.
      * @param payload Payload in JSON String.
      */
-    public GithubWebhookEvent(
+    public GitlabWebhookEvent(
         final Project project,
         final String payload
     ) {
@@ -61,22 +61,23 @@ public final class GithubWebhookEvent implements Event  {
         ).readObject();
     }
 
+
     @Override
     public String type() {
-        return "push";
+        return "Push Hook";
     }
 
     @Override
     public Issue issue() {
         throw new UnsupportedOperationException(
-            "No Issue in the PUSH Event."
+            "No Issue in the Push Hook event."
         );
     }
 
     @Override
     public Comment comment() {
         throw new UnsupportedOperationException(
-            "No Comment in the PUSH Event."
+            "No Comment in the Push Hook event."
         );
     }
 

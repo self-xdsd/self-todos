@@ -31,24 +31,24 @@ import org.mockito.Mockito;
 import javax.json.Json;
 
 /**
- * Unit tests for {@link GithubWebhookEvent}.
+ * Unit tests for {@link GitlabWebhookEvent}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class GithubWebhookEventTestCase {
+public final class GitlabWebhookEventTestCase {
 
     /**
      * Type of the event is push.
      */
     @Test
-    public void typeIsPush() {
+    public void typeIsPushHook() {
         MatcherAssert.assertThat(
-            new GithubWebhookEvent(
+            new GitlabWebhookEvent(
                 Mockito.mock(Project.class),
                 "{}"
             ).type(),
-            Matchers.equalTo("push")
+            Matchers.equalTo("Push Hook")
         );
     }
 
@@ -57,7 +57,7 @@ public final class GithubWebhookEventTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void issueIsNotSupported() {
-        new GithubWebhookEvent(
+        new GitlabWebhookEvent(
             Mockito.mock(Project.class),
             "{}"
         ).issue();
@@ -68,7 +68,7 @@ public final class GithubWebhookEventTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void commentIsNotSupported() {
-        new GithubWebhookEvent(
+        new GitlabWebhookEvent(
             Mockito.mock(Project.class),
             "{}"
         ).comment();
@@ -108,7 +108,7 @@ public final class GithubWebhookEventTestCase {
         Mockito.when(project.projectManager()).thenReturn(manager);
 
         MatcherAssert.assertThat(
-            new GithubWebhookEvent(
+            new GitlabWebhookEvent(
                 project,
                 Json.createObjectBuilder()
                     .add(
