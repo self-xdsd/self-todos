@@ -7,7 +7,9 @@
         "originatingTicket": "#153",
         "estimatedTime": 30,
         "body": "Add integration tests for filters.",
-        "file": ".\\RtImagesITCase.java"
+        "file": ".\\RtImagesITCase.java",
+        "author": "amihaiemil",
+        "timestamp": "2020-11-08 20:19:56 +0100"
     },
     {
         "id": -1377131499,
@@ -15,7 +17,7 @@
         "end": 72,
         "originatingTicket": "#187",
         "estimatedTime": 30,
-        "body": "To have multiple controlled images for filtering and not the ubuntu image dependency for this test will be nice to have the build Images implemented as described here: https://docs.docker.com/engine/api/v1.37/#operation/ImageBuild.",
+        "body": "Add integration tests for filters.",
         "file": ".\\RtImagesITCase.java"
     }
 ]
