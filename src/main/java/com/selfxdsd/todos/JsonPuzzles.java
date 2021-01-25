@@ -77,10 +77,8 @@ public final class JsonPuzzles implements Puzzles<String> {
             final JsonArray jsonArray = reader.readArray();
             final Puzzle.Builder builder = new Puzzle.Builder()
                 .setProject(this.project)
-                .setAuthor("")
                 .setEmail("")
-                .setRole("DEV")
-                .setTime("");
+                .setRole("DEV");
             for (final JsonValue jsonValue : jsonArray) {
                 JsonObject jsonObject = jsonValue.asJsonObject();
                 builder
@@ -92,7 +90,9 @@ public final class JsonPuzzles implements Puzzles<String> {
                         .getString("originatingTicket").substring(1)))
                     .setEstimate(jsonObject.getInt("estimatedTime"))
                     .setFile(jsonObject.getString("file"))
-                    .setBody(jsonObject.getString("body"));
+                    .setBody(jsonObject.getString("body"))
+                    .setAuthor(jsonObject.getString("author", ""))
+                    .setTime(jsonObject.getString("timestamp", ""));
                 puzzles.add(builder.build());
             }
         } catch (final JsonException

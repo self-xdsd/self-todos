@@ -481,6 +481,15 @@ public interface Puzzle {
                             + "It is located at " + this.getFile()
                             + "#" + this.getStart()+"-" + this.getEnd() + ". ";
                     }
+                    final String authorAndTimestamp;
+                    if(!this.getAuthor().isEmpty()
+                        && !this.getTime().isEmpty()) {
+                        authorAndTimestamp = "\nThe puzzle was created by "
+                            + "@" + this.getAuthor() + " at ``"
+                            + this.getTime() + "``. ";
+                    } else {
+                        authorAndTimestamp = "";
+                    }
                     issueBody = String.format(
                         new BufferedReader(
                             new InputStreamReader(
@@ -492,6 +501,7 @@ public interface Puzzle {
                         this.getId(),
                         "#" + this.getTicket(),
                         body,
+                        authorAndTimestamp,
                         this.getEstimate()
                     );
                     return issueBody;
