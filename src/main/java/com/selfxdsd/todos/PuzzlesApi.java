@@ -23,6 +23,7 @@
 package com.selfxdsd.todos;
 
 import com.selfxdsd.api.*;
+import com.selfxdsd.core.projects.WebhookEvents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,11 +95,11 @@ public class PuzzlesApi {
         } else {
             if(provider.equalsIgnoreCase(Provider.Names.GITHUB)) {
                 this.puzzlesComponent.review(
-                    new GithubWebhookEvent(project, payload)
+                    WebhookEvents.create(project, "push", payload)
                 );
             } else if(provider.equalsIgnoreCase(Provider.Names.GITLAB)) {
                 this.puzzlesComponent.review(
-                    new GitlabWebhookEvent(project, payload)
+                    WebhookEvents.create(project, "Push Hook", payload)
                 );
             }
             resp = ResponseEntity.ok().build();

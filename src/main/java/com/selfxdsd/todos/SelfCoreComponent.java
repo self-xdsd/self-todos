@@ -86,6 +86,11 @@ public class SelfCoreComponent implements Self {
     }
 
     @Override
+    public User authenticate(final String token) {
+        return this.core.authenticate(token);
+    }
+
+    @Override
     public ProjectManagers projectManagers() {
         return this.core.projectManagers();
     }
@@ -96,19 +101,14 @@ public class SelfCoreComponent implements Self {
     }
 
     @Override
-    public PlatformInvoices platformInvoices() {
-        return this.core.platformInvoices();
-    }
-
-    @Override
     public Contributors contributors() {
         return this.core.contributors();
     }
 
     @Override
     public void close() throws Exception {
-        LOG.warn("CLOSING SELF CORE...");
+        LOG.warn("Closing Self Core...");
         this.core.close();
-        LOG.warn("SELF CORE SUCCESSFULLY CLOSED!");
+        LOG.warn("Self Core successfully closed!");
     }
 }
