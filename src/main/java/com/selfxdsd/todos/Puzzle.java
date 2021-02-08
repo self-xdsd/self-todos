@@ -477,9 +477,11 @@ public interface Puzzle {
                             + "#L" + this.getStart()+"-L" + this.getEnd()
                             + "\n\n\"" + this.getBody() + "\".";
                     } else {
-                        body = "\"" + this.getBody() + "\"\n\n"
-                            + "It is located at " + this.getFile()
-                            + "#" + this.getStart()+"-" + this.getEnd() + ". ";
+                        final String location = this.getFile() + "#L"
+                            + this.getStart();
+                        body = "\"" + this.getBody() + "\".\n\n"
+                            + "It is located at [" + location + "]("
+                            + location + "). ";
                     }
                     final String authorAndTimestamp;
                     if(!this.getAuthor().isEmpty()
