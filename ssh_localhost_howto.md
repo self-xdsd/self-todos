@@ -3,6 +3,7 @@ To generate a pair of keys and register them with your local SSH server, follow 
 
 https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
+Generate an RSA key (older version).
 I suggest choosing a different name than ``id_rsa``. You can leave the passphrase empty.
 
 Add private key to ssh-agent.
