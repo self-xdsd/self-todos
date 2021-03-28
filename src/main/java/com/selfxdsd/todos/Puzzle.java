@@ -487,7 +487,7 @@ public interface Puzzle {
                     if(!this.getAuthor().isEmpty()
                         && !this.getTime().isEmpty()) {
                         authorAndTimestamp = "\nThe puzzle was created by "
-                            + "@" + this.getAuthor() + " at ``"
+                            + this.getAuthor() + " at ``"
                             + this.getTime() + "``. ";
                     } else {
                         authorAndTimestamp = "";

@@ -102,7 +102,7 @@ public final class JsonPuzzlesTestCase {
                 "The puzzle ``1194770182`` originating from #153 has to be resolved:\n\n"
                 + "https://github.com/null/blob/null/.\\RtImagesITCase.java#L42-L42\n\n"
                 + "\"Add integration tests for filters.\".\n\n\n"
-                + "The puzzle was created by @amihaiemil at ``2020-11-08 20:19:56 +0100``. \n"
+                + "The puzzle was created by amihaiemil at ``2020-11-08 20:19:56 +0100``. \n"
                 + "Estimation is ``30 minutes``.\n"
                 + "If you have any technical questions, don't ask me, I won't be able to help. Open new issues instead."
             )
@@ -140,9 +140,9 @@ public final class JsonPuzzlesTestCase {
             puzzle.issueBody(),
             Matchers.equalTo(
                 "The puzzle ``1194770182`` originating from #153 has to be resolved:\n\n"
-                    + "\"Add integration tests for filters.\"\n\n"
-                    + "It is located at .\\RtImagesITCase.java#42-42. \n\n\n"
-                    + "The puzzle was created by @amihaiemil at ``2020-11-08 20:19:56 +0100``. \n"
+                    + "\"Add integration tests for filters.\".\n\n"
+                    + "It is located at [.\\RtImagesITCase.java#L42](.\\RtImagesITCase.java#L42). \n\n\n"
+                    + "The puzzle was created by amihaiemil at ``2020-11-08 20:19:56 +0100``. \n"
                     + "Estimation is ``30 minutes``.\n"
                     + "If you have any technical questions, don't ask me, I won't be able to help. Open new issues instead."
             )
@@ -224,8 +224,8 @@ public final class JsonPuzzlesTestCase {
             puzzle.issueBody(),
             Matchers.equalTo(
             "The puzzle ``-1377131499`` originating from #187 has to be resolved:\n\n"
-                + "\"Add integration tests for filters.\"\n\n"
-                + "It is located at .\\RtImagesITCase.java#69-72. \n\n\n"
+                + "\"Add integration tests for filters.\".\n\n"
+                + "It is located at [.\\RtImagesITCase.java#L69](.\\RtImagesITCase.java#L69). \n\n\n"
                 + "Estimation is ``30 minutes``.\n"
                 + "If you have any technical questions, don't ask me, I won't be able to help. Open new issues instead."
             )
