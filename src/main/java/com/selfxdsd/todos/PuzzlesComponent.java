@@ -24,11 +24,14 @@ package com.selfxdsd.todos;
 
 import com.jcabi.ssh.Shell;
 import com.jcabi.ssh.Ssh;
-import com.selfxdsd.api.*;
+import com.selfxdsd.api.Commit;
+import com.selfxdsd.api.Event;
+import com.selfxdsd.api.Issue;
+import com.selfxdsd.api.Issues;
+import com.selfxdsd.api.Project;
 import com.selfxdsd.core.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -82,7 +85,6 @@ public class PuzzlesComponent {
      * @param event Event that triggered it.
      * processing the puzzles.
      */
-    @Async
     public void review(final Event event) {
         final Project project = event.project();
         final Commit commit = event.commit();
