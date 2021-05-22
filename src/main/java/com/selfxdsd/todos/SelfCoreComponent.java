@@ -22,15 +22,20 @@
  */
 package com.selfxdsd.todos;
 
-import com.selfxdsd.api.*;
-import com.selfxdsd.core.Env;
+import com.selfxdsd.api.Contributors;
+import com.selfxdsd.api.Login;
+import com.selfxdsd.api.ProjectManagers;
+import com.selfxdsd.api.Projects;
+import com.selfxdsd.api.Self;
+import com.selfxdsd.api.User;
+import com.selfxdsd.api.storage.Storage;
 import com.selfxdsd.core.SelfCore;
-import com.selfxdsd.storage.MySql;
-import com.selfxdsd.storage.SelfJooq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 
 /**
  * Self Core component.
@@ -39,8 +44,8 @@ import org.springframework.web.context.annotation.RequestScope;
  * @since 0.0.4
  */
 @Component
-@RequestScope
-public class SelfCoreComponent implements Self {
+@Scope("prototype")
+public class SelfCoreComponent implements Self, DisposableBean {
 
     /**
      * Logger.
@@ -49,7 +54,6 @@ public class SelfCoreComponent implements Self {
         SelfCoreComponent.class
     );
 
-
     /**
      * Self's core.
      */
@@ -57,17 +61,13 @@ public class SelfCoreComponent implements Self {
 
     /**
      * Default constructor for Spring.
+     * @param storage Storage.
      */
-    public SelfCoreComponent() {
+    @Autowired
+    public SelfCoreComponent(final Storage storage) {
         this(
             new SelfCore(
-                new SelfJooq(
-                    new MySql(
-                        System.getenv(Env.DB_URL),
-                        System.getenv(Env.DB_USER),
-                        System.getenv(Env.DB_PASSWORD)
-                    )
-                )
+               storage
             )
         );
     }
@@ -110,5 +110,10 @@ public class SelfCoreComponent implements Self {
         LOG.warn("Closing Self Core...");
         this.core.close();
         LOG.warn("Self Core successfully closed!");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        this.close();
     }
 }

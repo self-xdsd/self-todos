@@ -23,10 +23,10 @@
 package com.selfxdsd.todos;
 
 import com.selfxdsd.api.Project;
-import com.selfxdsd.api.Provider;
 import com.selfxdsd.api.Self;
-import com.selfxdsd.core.projects.WebhookEvents;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,28 +45,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class PuzzlesApi {
 
     /**
-     * Self's core.
+     * Spring container to manually obtain Self.
      */
-    private final Self selfCore;
+    private final BeanFactory beanFactory;
+
 
     /**
-     * Puzzles Component.
+     * Application event publisher.
      */
-    private final PuzzlesComponent puzzlesComponent;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * Ctor.
-     *
-     * @param selfCode Self Core, injected by Spring automatically.
-     * @param puzzlesComponent Puzzles Component.
+     * @param beanFactory Spring container to obtain Self.
+     * @param eventPublisher Event publisher.
      */
     @Autowired
     public PuzzlesApi(
-        final Self selfCode,
-        final PuzzlesComponent puzzlesComponent
+        final BeanFactory beanFactory,
+        final ApplicationEventPublisher eventPublisher
     ) {
-        this.selfCore = selfCode;
-        this.puzzlesComponent = puzzlesComponent;
+        this.beanFactory = beanFactory;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -79,8 +79,7 @@ public class PuzzlesApi {
      * @param name Simple name of the repository.
      * @param payload Payload of the PUSH event that triggered everything.
      * @return Response OK.
-     * @throws PuzzlesProcessingException Something went wrong during reading
-     * puzzles.
+     * @throws Exception If something goes wrong on closing database connection.
      * @checkstyle ParameterNumber (40 lines)
      */
     @PostMapping(
@@ -89,27 +88,25 @@ public class PuzzlesApi {
     )
     public ResponseEntity<String> reviewPuzzles(
         @PathVariable final String provider,
-        @PathVariable final String owner, @PathVariable final String name,
+        @PathVariable final String owner,
+        @PathVariable final String name,
         @RequestBody final String payload
-    ) {
+    ) throws Exception {
+        final Self selfCore = this.beanFactory.getBean(Self.class);
         final ResponseEntity<String> resp;
-        final Project project = this.selfCore.projects().getProjectById(
-            owner + "/" + name, provider
+        final String fullName = owner + "/" + name;
+        final Project project = selfCore.projects().getProjectById(
+            fullName, provider
         );
         if (project == null) {
             resp = ResponseEntity.badRequest().build();
         } else {
-            if (provider.equalsIgnoreCase(Provider.Names.GITHUB)) {
-                this.puzzlesComponent.review(
-                    WebhookEvents.create(project, "push", payload)
-                );
-            } else if (provider.equalsIgnoreCase(Provider.Names.GITLAB)) {
-                this.puzzlesComponent.review(
-                    WebhookEvents.create(project, "Push Hook", payload)
-                );
-            }
+            this.eventPublisher.publishEvent(
+                new PuzzlesWebhookEvent(provider, fullName, payload)
+            );
             resp = ResponseEntity.ok().build();
         }
+        selfCore.close();
         return resp;
     }
 }

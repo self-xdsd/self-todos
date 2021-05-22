@@ -22,21 +22,15 @@
  */
 package com.selfxdsd.todos;
 
-import com.jcabi.ssh.Shell;
-import com.jcabi.ssh.Ssh;
 import com.selfxdsd.api.*;
-import com.selfxdsd.core.Env;
+import com.selfxdsd.core.projects.WebhookEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Component which connects to a server via SSH, reads
@@ -46,7 +40,6 @@ import java.util.List;
  * @since 0.0.1
  */
 @Component
-@RequestScope
 public class PuzzlesComponent {
 
     /**
@@ -57,153 +50,68 @@ public class PuzzlesComponent {
     );
 
     /**
-     * SSH Connection.
+     * Spring container to manually obtain Self.
      */
-    private final Shell ssh = new Ssh(
-        System.getenv(Env.PDD_HOST),
-        Integer.valueOf(System.getenv(Env.PDD_PORT)),
-        System.getenv(Env.PDD_USERNAME),
-        Files.readString(
-            Path.of(System.getenv(Env.PDD_PRIVATE_KEY))
-        )
-    );
+    private final BeanFactory beanFactory;
+
+    /**
+     * Puzzles reviewer.
+     */
+    private final PuzzlesReviewer reviewer;
 
     /**
      * Ctor.
-     * @throws IOException If any IO problems occur while connecting
-     *  to the SSH server.
+     * @param beanFactory Spring container.
+     * @param reviewer Puzzles reviewer.
      */
-    public PuzzlesComponent() throws IOException { }
+    @Autowired
+    public PuzzlesComponent(
+        final BeanFactory beanFactory,
+        final PuzzlesReviewer reviewer
+    ) {
+        this.beanFactory = beanFactory;
+        this.reviewer = reviewer;
+    }
 
     /**
-     * Review the puzzles of the given Project. If it's a new puzzle,
-     * open an Issue for it. If the Project contains open Issues which
-     * don't have a corresponding puzzle, close them.
-     * @param event Event that triggered it.
-     * processing the puzzles.
+     * Listener for {@link PuzzlesWebhookEvent} Spring event triggered
+     * on webhook request.
+     * @param event Puzzles Webhook Event.
+     **@throws Exception If something goes wrong on closing database connection.
      */
     @Async
-    public void review(final Event event) {
-        final Project project = event.project();
-        final Commit commit = event.commit();
-        final Puzzles<Project> puzzles = new SshPuzzles(
-            this.ssh,
-            new JsonPuzzles(project, commit)
+    @EventListener
+    public void onPuzzleWebhookEvent(final PuzzlesWebhookEvent event)
+        throws Exception {
+        final Self selfCore = this.beanFactory.getBean(Self.class);
+        final String provider = event.getProvider();
+        final String repoFullName = event.getProjectFullName();
+        final Project project = selfCore.projects().getProjectById(
+            repoFullName, provider
         );
-        try {
-            puzzles.process(project);
-            final String owner = project.repoFullName().split("/")[0];
-            final String name = project.repoFullName().split("/")[1];
-
-            final Issues issues = project
-                .projectManager()
-                .provider()
-                .repo(owner, name)
-                .issues()
-                .search("", Puzzle.PUZZLE_LABEL);
-            this.openNewTickets(puzzles, issues, commit);
-            this.closeRemovedPuzzles(puzzles, issues, commit);
-        } catch (final PuzzlesProcessingException ex) {
-            LOG.error(
-                "Exception while reviewing puzzles for Project "
-                + project.repoFullName() + " at " + project.provider() + ": ",
-                ex
-            );
-        }
-    }
-
-    /**
-     * Open new issues for puzzles which don't already have a correspondent.
-     * @param puzzles Puzzles found in the repo.
-     * @param issues Issues API.
-     * @param commit Commit which triggered everything.
-     */
-    private void openNewTickets(
-        final Puzzles<Project> puzzles,
-        final Issues issues,
-        final Commit commit
-    ) {
-        final List<String> opened = new ArrayList<>();
-        for(final Puzzle puzzle : puzzles) {
-            boolean foundIssue = false;
-            for(final Issue issue : issues) {
-                if(issue.body().contains(puzzle.getId())) {
-                    foundIssue = true;
-                    break;
-                }
-            }
-            if(!foundIssue) {
-                final Issue newIssue = issues.open(
-                    puzzle.issueTitle(),
-                    puzzle.issueBody(),
-                    Puzzle.PUZZLE_LABEL,
-                    String.format(
-                        Puzzle.ESTIMATION_LABEL,
-                        puzzle.getEstimate()
-                    )
-                );
-                opened.add("#" + newIssue.issueId());
-            }
-        }
-        if(opened.size() > 0) {
-            String author = commit.author();
-            if(author != null && !author.isEmpty()) {
-                author = "@" + author + " ";
+        if (project != null) {
+            if (provider.equalsIgnoreCase(Provider.Names.GITHUB)) {
+                this.reviewer.review(WebhookEvents.create(project,
+                    "push",
+                    event.getPayload()
+                ));
+            } else if (provider.equalsIgnoreCase(Provider.Names.GITLAB)) {
+                this.reviewer.review(WebhookEvents.create(
+                    project,
+                    "Push Hook",
+                    event.getPayload()
+                ));
             } else {
-                author = "";
+                LOG.error("Unsupported provider {}. "
+                        + "Reviewing puzzles is canceled.",
+                    provider
+                );
             }
-            commit.comments().post(
-                author + "I've opened the Issues "
-                + opened + " for the newly added to-dos.\n\n"
-                + "The to-dos may have been added in an earlier commit, "
-                + "but I've found them just now."
-            );
+        } else {
+            LOG.error("Project {} for provider {} not found."
+                + " Reviewing puzzles is canceled.", repoFullName, provider);
         }
+        selfCore.close();
     }
 
-    /**
-     * Close issues which don't have a corresponding puzzle
-     * (puzzle has been removed from code).
-     * @param puzzles Puzzles found in the repo.
-     * @param issues Issues API.
-     * @param commit Commit which triggered everything.
-     */
-    private void closeRemovedPuzzles(
-        final Puzzles<Project> puzzles,
-        final Issues issues,
-        final Commit commit
-    ) {
-        final List<String> closed = new ArrayList<>();
-        for(final Issue issue : issues) {
-            boolean foundPuzzle = false;
-            for(final Puzzle puzzle : puzzles) {
-                if(issue.body().contains(puzzle.getId())) {
-                    foundPuzzle = true;
-                    break;
-                }
-            }
-            if(!foundPuzzle && !issue.isClosed()) {
-                issue.close();
-                issue.comments().post(
-                    "Puzzle disappeared from the code, "
-                    + "that's why I closed this ticket."
-                );
-                closed.add("#" + issue.issueId());
-            }
-        }
-        if(closed.size() > 0) {
-            String author = commit.author();
-            if(author != null && !author.isEmpty()) {
-                author = "@" + author + " ";
-            } else {
-                author = "";
-            }
-            commit.comments().post(
-                author + "I've closed the Issues "
-                + closed + " since their to-dos disappeared from the code.\n\n"
-                + "The to-dos may have been removed in an earlier commit, but "
-                + "I've found it just now."
-            );
-        }
-    }
 }

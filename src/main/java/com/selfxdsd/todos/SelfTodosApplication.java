@@ -22,10 +22,18 @@
  */
 package com.selfxdsd.todos;
 
+import com.selfxdsd.api.storage.Storage;
+import com.selfxdsd.core.Env;
+import com.selfxdsd.storage.MySql;
+import com.selfxdsd.storage.SelfJooq;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.io.IOException;
 
 /**
  * Entry point for SpringBoot.
@@ -47,4 +55,27 @@ public class SelfTodosApplication {
         SpringApplication.run(SelfTodosApplication.class, args);
     }
 
+    /**
+     * Storage bean.
+     * @return Storage.
+     */
+    @Bean
+    @Scope(value = "prototype")
+    public Storage storage() {
+        return new SelfJooq(new MySql(
+            System.getenv(Env.DB_URL),
+            System.getenv(Env.DB_USER),
+            System.getenv(Env.DB_PASSWORD)
+        ));
+    }
+
+    /**
+     * PuzzlesReviewer bean.
+     * @return PuzzleReviewer.
+     * @throws IOException If something goes wrong.
+     */
+    @Bean
+    public PuzzlesReviewer puzzlesReviewer() throws IOException {
+        return new PuzzlesReviewer.DefaultPuzzleReviewer();
+    }
 }
