@@ -7,7 +7,7 @@
 [![DevOps By Rultor.com](http://www.rultor.com/b/self-xdsd/self-todos)](http://www.rultor.com/p/self-xdsd/self-todos)
 [![We recommend IntelliJ IDEA](http://amihaiemil.github.io/images/intellij-idea-recommend.svg)](https://www.jetbrains.com/idea/)
 
-Self Puzzles module, version `0.0.5`.
+Self Puzzles module, version `0.0.6`.
 
 ## Contributing 
 
