@@ -80,9 +80,16 @@ public final class JsonPuzzles implements Puzzles<String> {
                 .setEmail("")
                 .setRole("DEV");
             for (final JsonValue jsonValue : jsonArray) {
-                JsonObject jsonObject = jsonValue.asJsonObject();
+                final JsonObject jsonObject = jsonValue.asJsonObject();
+                final String[] fullNameSplit = this.project.repoFullName()
+                    .split("/");
                 builder
-                    .setCommit(this.project.repo().commits().latest())
+                    .setCommit(this.project
+                        .projectManager()
+                        .provider()
+                        .repo(fullNameSplit[0], fullNameSplit[1])
+                        .commits()
+                        .latest())
                     .setId(Integer.toString(jsonObject.getInt("id")))
                     .setStart(jsonObject.getInt("start"))
                     .setEnd(jsonObject.getInt("end"))

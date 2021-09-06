@@ -28,7 +28,13 @@ public final class JsonPuzzlesTestCase {
         final Repo repo = Mockito.mock(Repo.class);
         Mockito.when(repo.commits()).thenReturn(commits);
         final Project project = Mockito.mock(Project.class);
-        Mockito.when(project.repo()).thenReturn(repo);
+        final ProjectManager manager = Mockito.mock(ProjectManager.class);
+        final Provider provider = Mockito.mock(Provider.class);
+        Mockito.when(manager.provider()).thenReturn(provider);
+        Mockito.when(provider.repo("john", "test"))
+            .thenReturn(repo);
+        Mockito.when(project.projectManager()).thenReturn(manager);
+        Mockito.when(project.repoFullName()).thenReturn("john/test");
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new JsonPuzzles(
@@ -83,7 +89,13 @@ public final class JsonPuzzlesTestCase {
         Mockito.when(repo.commits()).thenReturn(commits);
         final Project project = Mockito.mock(Project.class);
         Mockito.when(project.provider()).thenReturn(Provider.Names.GITHUB);
-        Mockito.when(project.repo()).thenReturn(repo);
+        final ProjectManager manager = Mockito.mock(ProjectManager.class);
+        final Provider provider = Mockito.mock(Provider.class);
+        Mockito.when(manager.provider()).thenReturn(provider);
+        Mockito.when(provider.repo("john", "test"))
+            .thenReturn(repo);
+        Mockito.when(project.projectManager()).thenReturn(manager);
+        Mockito.when(project.repoFullName()).thenReturn("john/test");
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new JsonPuzzles(
@@ -100,7 +112,7 @@ public final class JsonPuzzlesTestCase {
             puzzle.issueBody(),
             Matchers.equalTo(
                 "The puzzle ``1194770182`` originating from #153 has to be resolved:\n\n"
-                + "https://github.com/null/blob/null/.\\RtImagesITCase.java#L42-L42\n\n"
+                + "https://github.com/john/test/blob/null/.\\RtImagesITCase.java#L42-L42\n\n"
                 + "\"Add integration tests for filters.\".\n\n\n"
                 + "The puzzle was created by amihaiemil at ``2020-11-08 20:19:56 +0100``. \n"
                 + "Estimation is ``30 minutes``.\n"
@@ -123,7 +135,13 @@ public final class JsonPuzzlesTestCase {
         Mockito.when(repo.commits()).thenReturn(commits);
         final Project project = Mockito.mock(Project.class);
         Mockito.when(project.provider()).thenReturn(Provider.Names.GITLAB);
-        Mockito.when(project.repo()).thenReturn(repo);
+        final ProjectManager manager = Mockito.mock(ProjectManager.class);
+        final Provider provider = Mockito.mock(Provider.class);
+        Mockito.when(manager.provider()).thenReturn(provider);
+        Mockito.when(provider.repo("john", "test"))
+            .thenReturn(repo);
+        Mockito.when(project.projectManager()).thenReturn(manager);
+        Mockito.when(project.repoFullName()).thenReturn("john/test");
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new JsonPuzzles(
@@ -164,7 +182,13 @@ public final class JsonPuzzlesTestCase {
         Mockito.when(repo.commits()).thenReturn(commits);
         final Project project = Mockito.mock(Project.class);
         Mockito.when(project.provider()).thenReturn(Provider.Names.GITHUB);
-        Mockito.when(project.repo()).thenReturn(repo);
+        final ProjectManager manager = Mockito.mock(ProjectManager.class);
+        final Provider provider = Mockito.mock(Provider.class);
+        Mockito.when(manager.provider()).thenReturn(provider);
+        Mockito.when(provider.repo("john", "test"))
+            .thenReturn(repo);
+        Mockito.when(project.projectManager()).thenReturn(manager);
+        Mockito.when(project.repoFullName()).thenReturn("john/test");
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new JsonPuzzles(
@@ -183,7 +207,7 @@ public final class JsonPuzzlesTestCase {
             puzzle.issueBody(),
             Matchers.equalTo(
                 "The puzzle ``-1377131499`` originating from #187 has to be resolved:\n\n"
-                    + "https://github.com/null/blob/null/.\\RtImagesITCase.java#L69-L72\n\n"
+                    + "https://github.com/john/test/blob/null/.\\RtImagesITCase.java#L69-L72\n\n"
                     + "\"Add integration tests for filters.\".\n\n\n"
                     + "Estimation is ``30 minutes``.\n"
                     + "If you have any technical questions, don't ask me, I won't be able to help. Open new issues instead."
@@ -205,7 +229,13 @@ public final class JsonPuzzlesTestCase {
         Mockito.when(repo.commits()).thenReturn(commits);
         final Project project = Mockito.mock(Project.class);
         Mockito.when(project.provider()).thenReturn(Provider.Names.GITLAB);
-        Mockito.when(project.repo()).thenReturn(repo);
+        final ProjectManager manager = Mockito.mock(ProjectManager.class);
+        final Provider provider = Mockito.mock(Provider.class);
+        Mockito.when(manager.provider()).thenReturn(provider);
+        Mockito.when(provider.repo("john", "test"))
+            .thenReturn(repo);
+        Mockito.when(project.projectManager()).thenReturn(manager);
+        Mockito.when(project.repoFullName()).thenReturn("john/test");
 
         final Puzzles<String> puzzles = new ResourcesPuzzles(
             new JsonPuzzles(
