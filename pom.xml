@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.selfxdsd</groupId>
 	<artifactId>self-todos</artifactId>
-	<version>0.0.8-SNAPSHOT</version>
+	<version>0.0.9-SNAPSHOT</version>
 	<name>self-todos</name>
 	<description>Module for transforming Puzzles into Issues</description>
 
