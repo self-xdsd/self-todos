@@ -40,6 +40,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Component which connects to a server via SSH, reads
@@ -62,21 +64,46 @@ public class PuzzlesComponent {
     /**
      * SSH Connection.
      */
-    private final Shell ssh = new Ssh(
-        System.getenv(Env.PDD_HOST),
-        Integer.valueOf(System.getenv(Env.PDD_PORT)),
-        System.getenv(Env.PDD_USERNAME),
-        Files.readString(
-            Path.of(System.getenv(Env.PDD_PRIVATE_KEY))
-        )
-    );
+    private final Shell ssh;
+
+
+    /**
+     * Puzzles provider based on Shell, Project and Commit.
+     */
+    private final ShellProjectPuzzlesProvider puzzlesProvider;
 
     /**
      * Ctor.
      * @throws IOException If any IO problems occur while connecting
      *  to the SSH server.
      */
-    public PuzzlesComponent() throws IOException { }
+    public PuzzlesComponent() throws IOException {
+        this(new Ssh(
+                System.getenv(Env.PDD_HOST),
+                Integer.valueOf(System.getenv(Env.PDD_PORT)),
+                System.getenv(Env.PDD_USERNAME),
+                Files.readString(
+                    Path.of(System.getenv(Env.PDD_PRIVATE_KEY))
+                )
+            ),
+            shell -> (project, commit) -> new SshPuzzles(
+                shell,
+                new JsonPuzzles(project, commit)
+            )
+        );
+    }
+
+    /**
+     * Ctor used in tests.
+     * @param shell Shell.
+     * @param puzzlesProvider ShellProjectPuzzlesProvider.
+     */
+    PuzzlesComponent(
+        final Shell shell,
+        final ShellProjectPuzzlesProvider puzzlesProvider){
+        this.ssh = shell;
+        this.puzzlesProvider = puzzlesProvider;
+    }
 
     /**
      * Review the puzzles of the given Project. If it's a new puzzle,
@@ -88,10 +115,9 @@ public class PuzzlesComponent {
     public void review(final Event event) {
         final Project project = event.project();
         final Commit commit = event.commit();
-        final Puzzles<Project> puzzles = new SshPuzzles(
-            this.ssh,
-            new JsonPuzzles(project, commit)
-        );
+        final Puzzles<Project> puzzles = this.puzzlesProvider
+            .apply(this.ssh)
+            .apply(project, commit);
         try {
             puzzles.process(project);
             final String owner = project.repoFullName().split("/")[0];
@@ -190,6 +216,7 @@ public class PuzzlesComponent {
                     "Puzzle disappeared from the code, "
                     + "that's why I closed this ticket."
                 );
+                issue.labels().remove("puzzle");
                 closed.add("#" + issue.issueId());
             }
         }
@@ -207,5 +234,14 @@ public class PuzzlesComponent {
                 + "I've found it just now."
             );
         }
+    }
+
+    /**
+     * Alias for a function that takes a shell, commit, project as arguments
+     * and produces a Puzzles object.
+     */
+    @FunctionalInterface
+    interface ShellProjectPuzzlesProvider
+        extends Function<Shell, BiFunction<Project, Commit, Puzzles<Project>>> {
     }
 }
