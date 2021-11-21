@@ -44,7 +44,6 @@ import java.util.List;
  * @author criske
  * @version $Id$
  * @since 0.0.9
- * @todo #75:60min Write remaining tests for PuzzleComponent#review(...).
  */
 public final class PuzzlesComponentTestCase {
 
@@ -103,6 +102,127 @@ public final class PuzzlesComponentTestCase {
 
 
     /**
+     * PuzzleComponent can open new issues for puzzles which don't already have
+     * a correspondent.
+     */
+    @Test
+    public void shouldOpenNewIssueForPuzzlesWithNoCorrespondent(){
+        final Event event = Mockito.mock(Event.class);
+        final Project project = Mockito.mock(Project.class);
+        final Comments commitComments = Mockito.mock(Comments.class);
+        final Commit commit = this.mockCommit(
+            "john",
+            commitComments
+        );
+        final Issue issue = Mockito.mock(Issue.class);
+        final Issues issues = this.mockPuzzleLabeledIssues(project);
+
+        final PuzzlesComponent.ShellProjectPuzzlesProvider puzzlesProvider =
+            shell -> (proj, comm) -> {
+                final Puzzles<Project> puzzles = Mockito.mock(Puzzles.class);
+                final Puzzle puzzle = this.mockPuzzle("title", "body", 30);
+                Mockito.when(puzzles.iterator())
+                    .thenReturn(List.of(puzzle).iterator());
+                return puzzles;
+            };
+
+
+        final PuzzlesComponent component = new PuzzlesComponent(
+            Mockito.mock(Shell.class),
+            puzzlesProvider
+        );
+
+        Mockito.when(event.project()).thenReturn(project);
+        Mockito.when(event.commit()).thenReturn(commit);
+        Mockito.when(issue.issueId()).thenReturn("1");
+        Mockito.when(issues
+                .open("title", "body", "puzzle", "30 min"))
+            .thenReturn(issue);
+
+        component.review(event);
+
+        Mockito.verify(commitComments).post("@john I've opened the Issues "
+            + "[#1] for the newly added to-dos.\n\n"
+            + "The to-dos may have been added in an earlier commit, "
+            + "but I've found them just now.");
+    }
+
+    /**
+     * PuzzleComponent can skip opening new issue for puzzles that already have
+     * a correspondent.
+     */
+    @Test
+    public void shouldSkipOpenNewIssueForPuzzlesWithCorrespondent(){
+        final Event event = Mockito.mock(Event.class);
+        final Project project = Mockito.mock(Project.class);
+        final Comments commitComments = Mockito.mock(Comments.class);
+        final Commit commit = this.mockCommit(
+            "john",
+            commitComments
+        );
+        final Comments issueComments = Mockito.mock(Comments.class);
+        final Labels labels = Mockito.mock(Labels.class);
+        final Issue issue = this.mockPuzzleLabeledIssue(
+            "issue body with #puzzle-1",
+            labels,
+            issueComments
+        );
+        final Issues issues = this.mockPuzzleLabeledIssues(project, issue);
+
+        final PuzzlesComponent.ShellProjectPuzzlesProvider puzzlesProvider =
+            shell -> (proj, comm) -> {
+                final Puzzles<Project> puzzles = Mockito.mock(Puzzles.class);
+                final Puzzle puzzle = this.mockPuzzle(
+                    "title",
+                    "issue body with #puzzle-1",
+                    30
+                );
+                Mockito.when(puzzles.iterator())
+                    .thenReturn(List.of(puzzle).iterator());
+                return puzzles;
+            };
+
+
+        final PuzzlesComponent component = new PuzzlesComponent(
+            Mockito.mock(Shell.class),
+            puzzlesProvider
+        );
+
+        Mockito.when(event.project()).thenReturn(project);
+        Mockito.when(event.commit()).thenReturn(commit);
+        Mockito.when(issue.issueId()).thenReturn("1");
+
+        component.review(event);
+
+        Mockito.verify(issues, Mockito.never()).open(
+            Mockito.anyString(),
+            Mockito.anyString()
+        );
+        Mockito.verify(commitComments, Mockito.never())
+            .post(Mockito.anyString());
+    }
+
+    /**
+     * Mocks a puzzle.
+     * @param issueTitle Title.
+     * @param issueBody Body.
+     * @param estimation Estimation.
+     * @return Puzzle.
+     */
+    private Puzzle mockPuzzle(
+        final String issueTitle,
+        final String issueBody,
+        final int estimation
+    ){
+        final Puzzle puzzle = Mockito.mock(Puzzle.class);
+        Mockito.when(puzzle.issueTitle()).thenReturn(issueTitle);
+        Mockito.when(puzzle.issueBody()).thenReturn(issueBody);
+        Mockito.when(puzzle.getEstimate()).thenReturn(estimation);
+        Mockito.when(puzzle.getId()).thenReturn("#puzzle-1");
+        return puzzle;
+    }
+
+    /**
      * Mocks a puzzle labeled issue.
      * @param body Body.
      * @param labels Labels.
@@ -125,8 +245,9 @@ public final class PuzzlesComponentTestCase {
      * Mocks puzzle label issues associated with the Project.
      * @param project Project.
      * @param issue Array of issues.
+     * @return Mocked Labeled Issues.
      */
-    private void mockPuzzleLabeledIssues(
+    private Issues mockPuzzleLabeledIssues(
         final Project project,
         final Issue... issue
     ){
@@ -146,6 +267,7 @@ public final class PuzzlesComponentTestCase {
             .thenReturn(foundIssues);
         Mockito.when(foundIssues.iterator())
             .thenReturn(List.of(issue).iterator());
+        return foundIssues;
     }
 
     /**
