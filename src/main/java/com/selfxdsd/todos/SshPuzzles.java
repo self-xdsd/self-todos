@@ -98,6 +98,7 @@ public final class SshPuzzles implements Puzzles<Project> {
             final String puzzles = this.exec(
                 "cd self-todos-tmp-" + id + "/repo"
                 + " && cat ./todos.json");
+            this.exec("rm -rf self-todos-tmp-" + id);
             this.next.process(puzzles);
         } catch (final IOException | IllegalStateException exception) {
             LOG.error(
