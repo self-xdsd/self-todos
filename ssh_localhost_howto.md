@@ -3,7 +3,7 @@ To generate a pair of keys and register them with your local SSH server, follow 
 
 https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
-I suggest choosing a different name than ``id_ed25519``. You can leave the passphrase empty.
+I suggest choosing a different name than ``id_ed25519``, for example ``self_todos``. You can leave the passphrase empty.
 
 Add public key to file ~/.ssh/authorized_keys: echo $(cat self_todos.pub) >> authorized_keys
 
