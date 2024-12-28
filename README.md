@@ -42,6 +42,10 @@ you need to specify your credentials in Maven's ``settings.xml``:
 </settings>
 ```
 
+## SSH Settings
+
+This module needs some SSH configurations as explained [here](https://github.com/self-xdsd/self-todos/blob/master/ssh_localhost_howto.md).
+
 Make sure you [generate](https://github.com/settings/tokens) a token with the appropriate
 permissions. The ``settings.xml`` file usually resides on your computer at ``${user.home}/.m2/settings.xml``.
 If the file is not there, you can create it.
