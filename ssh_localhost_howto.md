@@ -1,18 +1,12 @@
-In order to connect to localhost via SSH, you will need to generate a pair of public/private SSH keys for test. 
+In order to connect to localhost via SSH, you will need to generate a pair of public/private SSH keys. 
 To generate a pair of keys and register them with your local SSH server, follow these steps:
 
 https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
-Generate an RSA key (older version).
-I suggest choosing a different name than ``id_rsa``. You can leave the passphrase empty.
+I suggest choosing a different name than ``id_ed25519``. You can leave the passphrase empty.
 
-Add private key to ssh-agent.
-Add public key to file ~/.ssh/authorized_keys: echo $(cat self_todos_rsa4.pub) >> authorized_keys
+Add public key to file ~/.ssh/authorized_keys: echo $(cat self_todos.pub) >> authorized_keys
 
 Hint:
 
-The library we use will throw an exception because it only supports RSA keys. To fix the problem, follow this article:
-https://mkyong.com/java/jsch-invalid-privatekey-exception/
-
-
-PM SSH Access to Github https://gist.github.com/oanhnn/80a89405ab9023894df7
+Configure SSH Access to Github for the Project Manager: https://gist.github.com/oanhnn/80a89405ab9023894df7
